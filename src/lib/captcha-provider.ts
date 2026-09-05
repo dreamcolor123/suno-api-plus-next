@@ -213,7 +213,6 @@ function timeoutController(parent: AbortSignal | undefined, timeoutMs: number) {
   if (parent?.aborted) abort();
   else parent?.addEventListener('abort', abort, { once: true });
   const timer = setTimeout(() => controller.abort(new Error('captcha_provider_timeout')), timeoutMs);
-  timer.unref?.();
   return {
     signal: controller.signal,
     cleanup: () => {
@@ -227,7 +226,6 @@ export function abortableCaptchaDelay(milliseconds: number, signal: AbortSignal)
   if (signal.aborted) return Promise.reject(signal.reason || new Error('captcha_cancelled'));
   return new Promise<void>((resolve, reject) => {
     const timer = setTimeout(() => finish(resolve), Math.max(0, milliseconds));
-    timer.unref?.();
     const abort = () => finish(() => reject(signal.reason || new Error('captcha_cancelled')));
     const finish = (callback: (() => void)) => {
       clearTimeout(timer);

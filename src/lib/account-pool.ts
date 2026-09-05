@@ -298,7 +298,6 @@ class AccountPool {
       waiter.resolve = () => finish(resolve);
       waiter.reject = (error) => finish(() => reject(error));
       waiter.timer = setTimeout(() => waiter.reject(timeoutError()), timeoutMs);
-      waiter.timer.unref?.();
       waiter.signal = signal;
       if (signal) {
         waiter.abort = () => waiter.reject(new AccountAffinityBusyError(1));

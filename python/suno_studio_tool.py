@@ -523,6 +523,8 @@ def upload_one(client: SunoClient, seg: Segment, idx: int, total: int, initializ
         raise RuntimeError("requests is required for Fast Upload")
     log("[upload] 处理音频...")
     mime = mimetypes.guess_type(seg.fileName)[0] or "audio/wav"
+    if mime == "audio/x-wav":
+        mime = "audio/wav"
     segment_key = f"segment:{seg.index}:{seg.fileName}"
     init = client.api("POST", "/api/uploads/audio/", {"extension": seg.path.suffix.lstrip(".") or "wav",
                                                         "upload_type": "studio_file_upload"},
