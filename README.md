@@ -1,20 +1,56 @@
+<div align="center">
+
 # Suno API Plus Next
 
-Unofficial, self-hosted Suno API gateway. This clean-history release is maintained by `dreamcolor123` and is based on the public [`ShowSnowBlood/suno-api-plus`](https://github.com/ShowSnowBlood/suno-api-plus) project, which incorporates [`gcui-art/suno-api`](https://github.com/gcui-art/suno-api). See [`NOTICE`](./NOTICE) and [`LICENSE`](./LICENSE).
+面向 Suno 的自托管 API 网关，提供账号池、OpenAI 兼容接口、Studio 工作流与源码版 Fast Upload。
 
-> Use only with an account and content you are authorized to use. Respect Suno's terms, applicable law, CAPTCHA-provider terms, and the licenses of all dependencies. This project is not affiliated with Suno, Inc.
+[![CI](https://github.com/dreamcolor123/suno-api-plus-next/actions/workflows/ci.yml/badge.svg)](https://github.com/dreamcolor123/suno-api-plus-next/actions/workflows/ci.yml)
+[![License](https://img.shields.io/badge/license-LGPL--3.0--or--later-blue.svg)](./LICENSE)
+[![Release](https://img.shields.io/github/v/release/dreamcolor123/suno-api-plus-next?include_prereleases&sort=semver)](https://github.com/dreamcolor123/suno-api-plus-next/releases)
 
-## Highlights
+**中文（当前页面）** · [English / 英文文档](./README_EN.md)
 
-- Native generation, custom mode, Cover, Extend, lyrics, clip metadata and clip queries.
-- OpenAI-compatible `/v1/models`, `/v1/chat/completions`, `/v1/responses` and billing endpoints.
-- Account pools with `basic`, `super` and `heavy` tiers, quota refresh, affinity tokens and global concurrency limits.
-- YesCaptcha and 2Captcha integrations with bounded deadlines, provider health and safe error codes.
-- Direct uploads for short files and Studio Fast Upload for long files, with idempotency, checkpoints and read-only reconciliation.
-- Studio Advanced Split submission and Studio project APIs. Legacy Advanced Split WAV/render routes intentionally return `410`.
-- Admin console for accounts, API keys, CAPTCHA, billing, concurrency and generation diagnostics.
+</div>
 
-## Quick start
+---
+
+## 目录
+
+- [功能概览](#功能概览)
+- [快速开始](#快速开始)
+- [配置](#配置)
+- [鉴权与账号 affinity](#鉴权与账号-affinity)
+- [上传与 Fast Upload](#上传与-fast-upload)
+- [Studio 高级分离](#studio-高级分离)
+- [OpenAI 兼容接口](#openai-兼容接口)
+- [原生接口](#原生接口)
+- [安全清单](#安全清单)
+- [从旧项目迁移](#从-suno-api-plus-迁移)
+- [开发与测试](#开发与测试)
+- [许可证与致谢](#许可证与致谢)
+
+非官方、可自托管的 Suno API 网关。本次干净历史版本由 `dreamcolor123` 维护，基于公开的 [`ShowSnowBlood/suno-api-plus`](https://github.com/ShowSnowBlood/suno-api-plus)，并继承 [`gcui-art/suno-api`](https://github.com/gcui-art/suno-api) 的相关实现。请查看 [`NOTICE`](./NOTICE) 和 [`LICENSE`](./LICENSE)。
+
+> 只使用你有权使用的账号和内容。请遵守 Suno 服务条款、当地法律、验证码服务条款以及所有依赖的许可证。本项目与 Suno, Inc. 没有隶属关系。
+
+| 入口 | 地址 |
+| --- | --- |
+| 在线 API 文档 | [`/docs`](http://127.0.0.1:3000/docs) |
+| 管理后台 | [`/admin`](http://127.0.0.1:3000/admin) |
+| OpenAPI 文件 | [`public/swagger-suno-api.json`](./public/swagger-suno-api.json) |
+| 项目仓库 | [dreamcolor123/suno-api-plus-next](https://github.com/dreamcolor123/suno-api-plus-next) |
+
+## 功能概览
+
+- 原生音乐生成、自定义模式、Cover、Extend、歌词、Clip 查询和元数据接口。
+- OpenAI 兼容的 `/v1/models`、`/v1/chat/completions`、`/v1/responses` 和计费接口。
+- `basic`、`super`、`heavy` 账号池、额度刷新、账号 affinity 和全局并发限制。
+- YesCaptcha/2Captcha，包含有限时限、服务健康检查和安全错误码。
+- 短音频 Direct Upload，长音频 Studio Fast Upload，支持幂等、检查点和只读核对。
+- Studio 高级分离、工程管理、Clip 下载；旧高级分离 WAV/render 下载接口明确返回 `410`。
+- 管理后台：账号、API Key、验证码、计费、并发和生成诊断。
+
+## 快速开始
 
 ### Docker Compose
 
@@ -22,15 +58,15 @@ Unofficial, self-hosted Suno API gateway. This clean-history release is maintain
 git clone https://github.com/dreamcolor123/suno-api-plus-next.git
 cd suno-api-plus-next
 cp .env.example .env
-# Edit .env and/or create data/accounts.json with your own account settings.
+# 编辑 .env，或创建 data/accounts.json 配置你自己的账号。
 docker compose up --build -d
 ```
 
-The service listens on `127.0.0.1:3000` by default. Persistent account and job data is stored in `./data`; keep that directory private and back it up securely. Credentials are runtime inputs only and are never Docker build arguments.
+默认监听 `127.0.0.1:3000`。账号和任务数据持久化在 `./data`，必须妥善保护和备份。凭据只在运行时注入，不会作为 Docker build 参数写入镜像。
 
-### Local development
+### 本地开发
 
-Requirements: Node.js 20+, Python 3.10+, FFmpeg/FFprobe, and a supported Chromium browser when browser-based CAPTCHA solving is enabled.
+需要 Node.js 20+、Python 3.10+、FFmpeg/FFprobe；启用浏览器验证码时还需要受支持的 Chromium 浏览器。
 
 ```bash
 npm ci
@@ -38,62 +74,62 @@ python -m pip install -r requirements-fast-upload.txt
 npm run dev
 ```
 
-Use `npm run build && npm run start` for a production-like local run. `npm test` runs the Node contract suite; `npm run test:python` runs Python tests.
+使用 `npm run build && npm run start` 验证生产模式。`npm test` 运行 Node 契约测试，`npm run test:python` 运行 Python 测试。
 
-## Configuration
+## 配置
 
-Copy `.env.example` and change every placeholder before exposing the service. Important settings include:
+复制 `.env.example` 并修改所有占位值。常用配置如下：
 
-| Variable | Purpose |
+| 变量 | 作用 |
 | --- | --- |
-| `SUNO_COOKIE` | Optional single-account development cookie. Prefer admin-managed accounts for production. |
-| `ACCOUNT_DATA_PATH` | JSON account-pool database; defaults to `./data/accounts.json`. |
-| `ACCOUNT_ENCRYPTION_KEY` | Encrypts stored account cookies. Use a long random value and rotate through a planned migration. |
-| `ADMIN_PASSWORD` | Admin console password. Set it before first use. |
-| `API_KEY` / `SUNO_API_KEY` | Optional key required by `/v1/*` when enabled. |
-| `CAPTCHA_PROVIDER` | `auto`, `yescaptcha` or `2captcha`. |
-| `YESCAPTCHA_KEY`, `TWOCAPTCHA_KEY` | CAPTCHA provider credentials, supplied only at runtime. |
-| `SUNO_PROXY_URL` | Optional proxy for Suno/Clerk traffic. Do not use untrusted public proxies. |
-| `SUNO_STUDIO_FFMPEG_EXE`, `SUNO_STUDIO_FFPROBE_EXE` | Optional explicit media-tool paths. Docker supplies both. |
-| `SUNO_FAST_UPLOAD_*` | Fast Upload timeout and bounded concurrency controls. |
+| `SUNO_COOKIE` | 仅建议本地开发使用的单账号 Cookie；生产环境优先使用后台账号池。 |
+| `ACCOUNT_DATA_PATH` | 账号池 JSON 路径，默认 `./data/accounts.json`。 |
+| `ACCOUNT_ENCRYPTION_KEY` | 加密保存的账号 Cookie；使用长随机值并规划轮换。 |
+| `ADMIN_PASSWORD` | 管理后台密码，首次使用前必须设置。 |
+| `API_KEY` / `SUNO_API_KEY` | 启用后保护 `/v1/*` 接口。 |
+| `CAPTCHA_PROVIDER` | `auto`、`yescaptcha` 或 `2captcha`。 |
+| `YESCAPTCHA_KEY`、`TWOCAPTCHA_KEY` | 仅在运行时提供的验证码服务密钥。 |
+| `SUNO_PROXY_URL` | 可选的 Suno/Clerk 请求代理，不要使用不可信公共代理。 |
+| `SUNO_STUDIO_FFMPEG_EXE`、`SUNO_STUDIO_FFPROBE_EXE` | 可选的媒体工具路径，Docker 已自带。 |
+| `SUNO_FAST_UPLOAD_*` | Fast Upload 超时和有限并发控制。 |
 
-The admin panel can persist account-pool, API-key, CAPTCHA, billing and concurrency settings under the configured data directory. Do not commit that directory.
+后台可将账号池、API Key、验证码、计费和并发设置保存到数据目录。该目录不得提交到 Git。
 
-## Authentication and account affinity
+## 鉴权与账号 affinity
 
-Public OpenAI-compatible routes accept `Authorization: Bearer <API_KEY>` (or `x-api-key` / `api-key`) when API-key authentication is enabled. Admin routes use the `suno_admin_session` cookie established by `/admin`.
+启用 API Key 后，OpenAI 兼容接口接受 `Authorization: Bearer <API_KEY>`，也兼容 `x-api-key`/`api-key`。管理接口使用 `/admin` 建立的 `suno_admin_session` Cookie。
 
-Operations involving uploaded or private Studio material are account-owned. Responses may include an opaque `account_affinity` value in JSON and/or `X-Suno-Account-Affinity`. Pass that value unchanged to subsequent operations on the same private source. Never log, publish, decode, or substitute affinity tokens.
+上传内容或私有 Studio 工程属于特定账号。响应可能在 JSON 和/或 `X-Suno-Account-Affinity` 中返回不透明的 `account_affinity`。后续操作必须原样传回，不要记录、发布、解码或替换 affinity token。
 
-## Uploads and Fast Upload
+## 上传与 Fast Upload
 
-`POST /api/upload_audio` accepts multipart `audio_file` (or `file`). The server probes duration with FFprobe:
+`POST /api/upload_audio` 接收 multipart 字段 `audio_file`（也兼容 `file`），服务端使用 FFprobe 读取时长：
 
-- `<= 30.000` seconds: direct Suno upload.
-- `> 30.000` seconds: Studio Fast Upload; no direct-upload fallback.
+- `<=30.000` 秒：Direct Upload。
+- `>30.000` 秒：Studio Fast Upload，不回退 Direct Upload。
 
-Send a stable `Idempotency-Key` for long uploads. A completed key replays the recorded result; a running key returns a conflict; an ambiguous submission is exposed for read-only reconciliation at `POST /api/upload_audio/reconcile` and is never blindly replayed. Temporary segments and task evidence are removed only when ownership is proven.
+长音频请发送稳定的 `Idempotency-Key`。已完成的 key 会复用结果；运行中的 key 返回冲突；结果不明时只能通过 `POST /api/upload_audio/reconcile` 只读核对，不能盲目重提。只有在能证明归属时才会清理临时分片和任务证据。
 
-Fast Upload is source-only and does not include the private native extension or a bundled browser profile. The public worker uses runtime Token input, FFmpeg, multipart fields from the presigned target, bounded retries, atomic checkpoints and Studio project reconciliation. It must not be used to bypass Suno access controls or content restrictions.
+Fast Upload 只发布源码，不包含私有原生扩展或浏览器 Profile。公开 worker 使用运行时 Token、FFmpeg、预签名上传返回的全部字段、有限重试、原子检查点和 Studio 工程核对；不得用来绕过 Suno 访问控制或内容限制。
 
-## Studio Advanced Split
+## Studio 高级分离
 
-`POST /api/advanced_stems` accepts one stem per request:
+`POST /api/advanced_stems` 每次只提交一个 stem：
 
 ```json
 {
-  "audio_id": "<source-clip-id>",
-  "project_id": "<studio-project-id>",
+  "audio_id": "<源 Clip ID>",
+  "project_id": "<Studio 工程 ID>",
   "stem_name": "Bass",
-  "account_affinity": "<opaque-affinity>"
+  "account_affinity": "<不透明 affinity>"
 }
 ```
 
-The API Plus endpoint mirrors Studio's extraction request and returns the provider result. Use the Studio project, downbeats and save routes to build a project context. Downloading isolated clips is done with `POST /api/studio/clip/{clip_id}/download`; `GET /api/studio/clip/{clip_id}/downbeats` exposes timing data. The old `/api/advanced_stems/wav` and `/api/advanced_stems/render` endpoints are disabled with HTTP `410` because they depended on an unavailable legacy download path.
+该接口复刻 Studio 的分离请求并返回 Provider 结果。使用 Studio 工程、Downbeats 和保存接口建立工程上下文；单 Clip 下载使用 `POST /api/studio/clip/{clip_id}/download`，节拍信息使用 `GET /api/studio/clip/{clip_id}/downbeats`。旧 `/api/advanced_stems/wav` 与 `/api/advanced_stems/render` 因依赖不可用的旧下载链路，固定返回 HTTP `410`。
 
-The desktop Runtime's automatic multi-stage WAV/ZIP orchestration is outside this repository. API Plus exposes the primitives; callers are responsible for their own workflow and artifact storage.
+桌面 Runtime 的自动多阶段 WAV/ZIP 编排不属于本仓库。API Plus 提供底层接口，调用方负责自己的流程和产物存储。
 
-## OpenAI-compatible API
+## OpenAI 兼容接口
 
 ```bash
 curl "$BASE_URL/v1/models" \
@@ -102,44 +138,44 @@ curl "$BASE_URL/v1/models" \
 curl "$BASE_URL/v1/chat/completions" \
   -H "Authorization: Bearer $API_KEY" \
   -H "Content-Type: application/json" \
-  -d '{"model":"suno-music","messages":[{"role":"user","content":"An energetic synth-pop song about a night train"}]}'
+  -d '{"model":"suno-music","messages":[{"role":"user","content":"一首关于夜行列车的动感合成器流行歌曲"}]}'
 ```
 
-The public model catalog exposes stable aliases such as `suno-music`, `suno-v5.5`, `suno-v5`, `suno-v4.5+` and legacy aliases. Unknown model IDs are passed through for forward compatibility. `/v1/images/generations` and `/v1/videos` currently return a documented `501` unsupported response.
+模型目录提供 `suno-music`、`suno-v5.5`、`suno-v5`、`suno-v4.5+` 等稳定别名和旧别名。未知模型 ID 会透传，以便兼容新的 Suno 版本。`/v1/images/generations` 和 `/v1/videos` 当前返回有明确说明的 `501`。
 
-## Native routes
+## 原生接口
 
-The interactive Swagger page is available at `/docs`. The current contract includes:
+交互式 Swagger 页面位于 `/docs`，当前契约包括：
 
-- Generation: `/api/generate`, `/api/custom_generate`, `/api/cover`, `/api/extend_audio`, `/api/generate_lyrics`, `/api/generate_stems`, `/api/concat`.
-- Reading: `/api/get`, `/api/get_limit`, `/api/get_aligned_lyrics`, `/api/clip`, `/api/persona`, `/api/voices`.
-- Upload and metadata: `/api/upload_audio`, `/api/upload_audio/reconcile`, `/api/clip/{clip_id}/metadata`, `/api/clip/{clip_id}/download`.
-- Studio: project load, create-or-load, save, archive, downbeats, project listings and Studio clip download.
-- Advanced Split: `/api/advanced_stems`, plus the explicit legacy `410` routes.
-- Administration: accounts, verification/refresh, CAPTCHA, API key, billing, concurrency, songs and admin generation.
+- 生成：`/api/generate`、`/api/custom_generate`、`/api/cover`、`/api/extend_audio`、`/api/generate_lyrics`、`/api/generate_stems`、`/api/concat`。
+- 查询：`/api/get`、`/api/get_limit`、`/api/get_aligned_lyrics`、`/api/clip`、`/api/persona`、`/api/voices`。
+- 上传和元数据：`/api/upload_audio`、`/api/upload_audio/reconcile`、`/api/clip/{clip_id}/metadata`、`/api/clip/{clip_id}/download`。
+- Studio：工程加载、创建/加载、保存、归档、Downbeats、工程列表和 Studio Clip 下载。
+- 高级分离：`/api/advanced_stems` 及明确返回 `410` 的旧接口。
+- 管理：账号、验证/刷新、验证码、API Key、计费、并发、歌曲和后台生成。
 
-See [`src/app/docs/swagger-suno-api.json`](./src/app/docs/swagger-suno-api.json) for request and response schemas. The checked-in `public/swagger-suno-api.json` is generated from that source and must remain identical.
+请求/响应 schema 见 [`src/app/docs/swagger-suno-api.json`](./src/app/docs/swagger-suno-api.json)。`public/swagger-suno-api.json` 是由该文件生成的副本，必须保持一致。
 
-## Security checklist
+## 安全清单
 
-- Keep `.env`, `data/`, logs, PID files, browser profiles, token files, generated media and backups outside Git.
-- Use HTTPS or a private reverse proxy when serving beyond localhost; see [`deploy/HTTPS.md`](./deploy/HTTPS.md).
-- Set a strong admin password, encryption key and API key. Rotate them deliberately, not during an active upload.
-- Restrict account-pool files and artifact directories to the service account.
-- Do not expose provider cookies, CAPTCHA keys, affinity tokens or signed URLs in logs or issue reports.
-- Do not use the public demo or a third-party proxy as an account store.
+- `.env`、`data/`、日志、PID、浏览器 Profile、Token 文件、生成音频和备份不得进入 Git。
+- 对外提供服务时使用 HTTPS 或私有反向代理，参考 [`deploy/HTTPS.md`](./deploy/HTTPS.md)。
+- 设置强后台密码、加密密钥和 API Key；不要在活动上传期间随意轮换。
+- 限制账号池文件和产物目录的文件权限。
+- 日志和问题报告中不得出现 Suno Cookie、验证码密钥、affinity token 或签名 URL。
+- 不要把公共演示服务或第三方代理当作账号存储。
 
-## Migration from `suno-api-plus`
+## 从 `suno-api-plus` 迁移
 
-This release uses a clean Git history and is not a drop-in replacement for the old repository's Git remote. Copy only intentional runtime configuration into `data/`; do not copy `.env`, logs, `.next`, `node_modules`, browser profiles or old Fast Upload private runtimes. Review clients for the following changes:
+本仓库使用干净 Git 历史，不是旧仓库 Git remote 的直接替换。只迁移你明确需要的运行配置到 `data/`，不要复制 `.env`、日志、`.next`、`node_modules`、浏览器 Profile 或旧 Fast Upload 私有 Runtime。客户端需要注意：
 
-1. Legacy Advanced Split WAV/render downloads now return `410`; use Studio project and clip-download routes.
-2. Long uploads require `Idempotency-Key` for reliable replay/reconciliation.
-3. Uploaded/private operations must keep the returned account affinity.
-4. Fast Upload is source-only and uses the public Python worker; private native extensions are not supported.
-5. `/api/generate_lyrics` is self-contained and uses Suno's native lyrics endpoint.
+1. 旧高级分离 WAV/render 下载接口现在返回 `410`，请改用 Studio 工程和 Clip 下载接口。
+2. 长音频上传应使用 `Idempotency-Key`，以便可靠复用和核对。
+3. 上传/私有操作必须保留响应中的账号 affinity。
+4. Fast Upload 只使用公开 Python worker，不支持私有原生扩展。
+5. `/api/generate_lyrics` 已自包含，直接调用 Suno 原生歌词接口。
 
-## Development and tests
+## 开发与测试
 
 ```bash
 npm test
@@ -148,8 +184,8 @@ npm run typecheck
 npm run build
 ```
 
-Tests are contract and synthetic-fixture tests. They do not contain real cookies or provider credentials and do not make real Suno requests.
+测试只使用契约和合成 fixture，不包含真实 Cookie/Provider 密钥，也不会调用真实 Suno。
 
-## License and credits
+## 许可证与致谢
 
-Licensed under LGPL-3.0-or-later. Preserve the license and notices in redistributed copies. Upstream credits: `gcui.ai/suno-api` and `ShowSnowBlood/suno-api-plus`. Current changes and the source-only Fast Upload rewrite are maintained by `dreamcolor123`; see [`NOTICE`](./NOTICE).
+本项目使用 LGPL-3.0-or-later。重新分发时请保留许可证和版权声明。上游致谢：`gcui.ai/suno-api`、`ShowSnowBlood/suno-api-plus`。当前修改和源码版 Fast Upload 由 `dreamcolor123` 维护，详见 [`NOTICE`](./NOTICE)。
