@@ -35,7 +35,7 @@
 
 | 入口 | 地址 |
 | --- | --- |
-| 在线 API 文档 | [`/docs`](http://127.0.0.1:3000/docs) |
+| 交互式 API 文档 | 本地运行后访问 `http://127.0.0.1:3000/docs`（不提供在线站点） |
 | 管理后台 | [`/admin`](http://127.0.0.1:3000/admin) |
 | OpenAPI 文件 | [`public/swagger-suno-api.json`](./public/swagger-suno-api.json) |
 | 项目仓库 | [dreamcolor123/suno-api-plus-next](https://github.com/dreamcolor123/suno-api-plus-next) |

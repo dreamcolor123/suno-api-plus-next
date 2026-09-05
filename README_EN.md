@@ -36,7 +36,7 @@ Unofficial, self-hosted Suno API gateway. This clean-history release is maintain
 
 | Entry | Link |
 | --- | --- |
-| Interactive API docs | [`/docs`](http://127.0.0.1:3000/docs) |
+| Interactive API docs | After starting locally: `http://127.0.0.1:3000/docs` (no hosted docs site) |
 | Admin console | [`/admin`](http://127.0.0.1:3000/admin) |
 | OpenAPI file | [`public/swagger-suno-api.json`](./public/swagger-suno-api.json) |
 | Repository | [dreamcolor123/suno-api-plus-next](https://github.com/dreamcolor123/suno-api-plus-next) |
