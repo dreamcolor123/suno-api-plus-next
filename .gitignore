@@ -1,0 +1,72 @@
+# dependencies
+/node_modules
+/suno-cookie-extractor/node_modules
+/.pnp
+.pnp.js
+.yarn/install-state.gz
+
+# testing
+/coverage
+**/__pycache__/
+*.py[cod]
+
+# next.js
+/.next/
+/out/
+
+# production
+/build
+/data
+/fast-upload-data
+**/browser-profile
+**/current_browser_token.json
+**/*token*.json
+**/*cookie*.json
+*.wav
+*.mp3
+*.mp4
+/data/**
+
+# misc
+.DS_Store
+*.pem
+*.log
+*.pid
+*.out
+*.err
+*.tgz
+*.tar.gz
+build.log
+
+# debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# local env files
+.env*.local
+.env
+_ssh_pw.txt
+*_created_api_key.txt
+suno-cookie-extension.zip
+*.status
+*.status.json
+
+# local deploy helpers / temp scripts (do not publish)
+_*.py
+_*.js
+_*.txt
+_*.bat
+_*.status.txt
+
+# vercel
+.vercel
+
+# typescript
+*.tsbuildinfo
+
+.idea
+.vscode
+
+# OS / editor
+Thumbs.db

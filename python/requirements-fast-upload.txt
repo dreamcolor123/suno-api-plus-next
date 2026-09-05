@@ -1,0 +1,5 @@
+# Public Fast Upload worker dependencies.  Credentials and browser state are
+# supplied at runtime and are never part of this dependency set.
+numpy>=1.26,<3
+requests>=2.31,<3
+websocket-client>=1.7,<2

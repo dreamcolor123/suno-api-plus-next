@@ -1,0 +1,16 @@
+Suno API Plus Next
+
+This project is an unofficial continuation of ShowSnowBlood/suno-api-plus,
+which in turn incorporates and adapts gcui-art/suno-api. Their copyright,
+license notices, and attribution remain applicable; see LICENSE.
+
+The current repository is maintained by dreamcolor123 and contains additional
+account-pool, CAPTCHA, OpenAI-compatible, Studio, Advanced Split, download,
+reconciliation, and Fast Upload changes.
+
+Fast Upload includes an authorized, readable Python reconstruction/rewrite of
+the owner's Studio upload behavior. It is distributed as source code only and
+does not include the private binary extension, private runtime, credentials,
+browser profiles, or generated media.
+
+Suno, Suno AI, and related service marks belong to their respective owners.

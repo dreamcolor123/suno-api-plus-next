@@ -1,0 +1,5 @@
+# Public Studio Fast Upload worker dependencies.
+numpy>=1.26,<3
+requests>=2.31,<3
+websocket-client>=1.7,<2
+pytest>=8,<9

@@ -1,0 +1,3224 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Suno API Plus Next",
+    "description": "Unofficial self-hosted Suno API gateway with account affinity, Studio workflows, Advanced Split, Fast Upload and OpenAI-compatible routes.",
+    "version": "2.0.0"
+  },
+  "tags": [
+    {
+      "name": "default"
+    },
+    {
+      "name": "billing"
+    },
+    {
+      "name": "admin"
+    },
+    {
+      "name": "concurrency"
+    }
+  ],
+  "paths": {
+    "/v1/models": {
+      "get": {
+        "summary": "List available Suno models.",
+        "description": "Returns the OpenAI-compatible model catalog. When API key authentication is enabled, send Authorization: Bearer <API_KEY> (or x-api-key). Use the returned public id in generation requests. Actual availability depends on the selected Suno account plan and upstream permissions.",
+        "tags": [
+          "default"
+        ],
+        "responses": {
+          "200": {
+            "description": "Available models.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/model_list"
+                },
+                "example": {
+                  "object": "list",
+                  "data": [
+                    {
+                      "id": "suno-music",
+                      "object": "model",
+                      "created": 0,
+                      "owned_by": "suno-api",
+                      "capabilities": [
+                        "music"
+                      ],
+                      "metadata": {
+                        "provider": "suno",
+                        "provider_model": "chirp-fenix",
+                        "label": "Suno Music (Latest)",
+                        "description": "Recommended OpenAI-compatible alias for the latest Suno music model.",
+                        "status": "current",
+                        "recommended": true,
+                        "alias_of": "chirp-fenix"
+                      }
+                    },
+                    {
+                      "id": "suno-v5.5",
+                      "object": "model",
+                      "created": 0,
+                      "owned_by": "suno-api",
+                      "capabilities": [
+                        "music"
+                      ],
+                      "metadata": {
+                        "provider": "suno",
+                        "provider_model": "chirp-fenix",
+                        "label": "Suno V5.5",
+                        "description": "Latest Suno model with improved expression and personalization.",
+                        "status": "current",
+                        "recommended": false,
+                        "alias_of": "chirp-fenix"
+                      }
+                    },
+                    {
+                      "id": "suno-v5",
+                      "object": "model",
+                      "created": 0,
+                      "owned_by": "suno-api",
+                      "capabilities": [
+                        "music"
+                      ],
+                      "metadata": {
+                        "provider": "suno",
+                        "provider_model": "chirp-crow",
+                        "label": "Suno V5",
+                        "description": "Previous-generation Suno V5 music model.",
+                        "status": "stable",
+                        "recommended": false,
+                        "alias_of": "chirp-crow"
+                      }
+                    },
+                    {
+                      "id": "suno-v4.5+",
+                      "object": "model",
+                      "created": 0,
+                      "owned_by": "suno-api",
+                      "capabilities": [
+                        "music"
+                      ],
+                      "metadata": {
+                        "provider": "suno",
+                        "provider_model": "chirp-bluejay",
+                        "label": "Suno V4.5+",
+                        "description": "Enhanced V4.5 generation model.",
+                        "status": "stable",
+                        "recommended": false,
+                        "alias_of": "chirp-bluejay"
+                      }
+                    },
+                    {
+                      "id": "suno-v4.5",
+                      "object": "model",
+                      "created": 0,
+                      "owned_by": "suno-api",
+                      "capabilities": [
+                        "music"
+                      ],
+                      "metadata": {
+                        "provider": "suno",
+                        "provider_model": "chirp-auk",
+                        "label": "Suno V4.5",
+                        "description": "Stable V4.5 generation model.",
+                        "status": "stable",
+                        "recommended": false,
+                        "alias_of": "chirp-auk"
+                      }
+                    },
+                    {
+                      "id": "suno-v4",
+                      "object": "model",
+                      "created": 0,
+                      "owned_by": "suno-api",
+                      "capabilities": [
+                        "music"
+                      ],
+                      "metadata": {
+                        "provider": "suno",
+                        "provider_model": "chirp-v4",
+                        "label": "Suno V4",
+                        "description": "Legacy V4 generation model.",
+                        "status": "legacy",
+                        "recommended": false,
+                        "alias_of": "chirp-v4"
+                      }
+                    },
+                    {
+                      "id": "suno-v3.5",
+                      "object": "model",
+                      "created": 0,
+                      "owned_by": "suno-api",
+                      "capabilities": [
+                        "music"
+                      ],
+                      "metadata": {
+                        "provider": "suno",
+                        "provider_model": "chirp-v3-5",
+                        "label": "Suno V3.5",
+                        "description": "Legacy V3.5 generation model.",
+                        "status": "legacy",
+                        "recommended": false,
+                        "alias_of": "chirp-v3-5"
+                      }
+                    },
+                    {
+                      "id": "suno-v3",
+                      "object": "model",
+                      "created": 0,
+                      "owned_by": "suno-api",
+                      "capabilities": [
+                        "music"
+                      ],
+                      "metadata": {
+                        "provider": "suno",
+                        "provider_model": "chirp-v3-0",
+                        "label": "Suno V3",
+                        "description": "Legacy V3 generation model.",
+                        "status": "legacy",
+                        "recommended": false,
+                        "alias_of": "chirp-v3-0"
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "API key required or invalid."
+          }
+        }
+      }
+    },
+    "/v1/billing": {
+      "get": {
+        "summary": "Get active credit and multiplier billing settings.",
+        "description": "Returns persisted settings and calculated costs. API key authentication is required when enabled for /v1/*. Defaults: CNY 120 / 2500 credits, 10 credits and 2 songs per request, multiplier 1, and CNY 1 per USD balance unit. Results: CNY 0.048 per credit, CNY 0.48 per request, and CNY 0.24 per song.",
+        "tags": [
+          "billing"
+        ],
+        "security": [
+          {
+            "BearerAuth": []
+          },
+          {
+            "ApiKeyAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Active billing settings and calculated summary.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/billing_public_response"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "API key required or invalid."
+          },
+          "500": {
+            "description": "Billing settings could not be loaded."
+          }
+        }
+      }
+    },
+    "/v1/sub2api/billing": {
+      "get": {
+        "summary": "Declare the upstream rate multiplier to Sub2API.",
+        "description": "Sub2API compatibility probe. It exposes the active rateMultiplier using the schema required by Sub2API. This declaration does not change the per-request generation charge.",
+        "tags": [
+          "billing"
+        ],
+        "security": [
+          {
+            "BearerAuth": []
+          },
+          {
+            "ApiKeyAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Current upstream multiplier declaration.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/sub2api_key_billing"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "API key required or invalid."
+          },
+          "500": {
+            "description": "Billing multiplier could not be loaded."
+          }
+        }
+      }
+    },
+    "/api/admin/billing": {
+      "get": {
+        "summary": "Get billing settings for the admin panel.",
+        "description": "Requires a valid suno_admin_session cookie created by the admin login flow.",
+        "tags": [
+          "admin",
+          "billing"
+        ],
+        "security": [
+          {
+            "AdminSession": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Active billing settings and calculated summary.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/billing_snapshot"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Admin authentication required."
+          },
+          "500": {
+            "description": "Billing settings could not be loaded."
+          }
+        }
+      },
+      "put": {
+        "summary": "Update billing settings.",
+        "description": "Persists positive numeric settings to billing-settings.json beside ACCOUNT_DATA_PATH and applies them immediately without a restart. Requires a valid suno_admin_session cookie.",
+        "tags": [
+          "admin",
+          "billing"
+        ],
+        "security": [
+          {
+            "AdminSession": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/billing_settings_update"
+              },
+              "example": {
+                "purchaseCostCny": 120,
+                "purchasedCredits": 2500,
+                "creditsPerGeneration": 10,
+                "outputsPerGeneration": 2,
+                "rateMultiplier": 1,
+                "cnyPerUsd": 1
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Billing settings saved and applied.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/billing_admin_save_response"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "A supplied setting is not a positive finite number."
+          },
+          "401": {
+            "description": "Admin authentication required."
+          },
+          "500": {
+            "description": "Billing settings could not be saved."
+          }
+        }
+      }
+    },
+    "/api/admin/concurrency": {
+      "get": {
+        "summary": "Get global generation concurrency settings and live capacity.",
+        "description": "Requires a valid suno_admin_session cookie. The default global limit is 4 concurrent generation requests.",
+        "tags": [
+          "admin",
+          "concurrency"
+        ],
+        "security": [
+          {
+            "AdminSession": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Current settings, active request count, and available slots.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/concurrency_snapshot"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Admin authentication required."
+          },
+          "500": {
+            "description": "Concurrency settings could not be loaded."
+          }
+        }
+      },
+      "put": {
+        "summary": "Update the global generation concurrency limit.",
+        "description": "Accepts maxConcurrentRequests from 1 to 100 and applies the new limit immediately. Requires a valid suno_admin_session cookie.",
+        "tags": [
+          "admin",
+          "concurrency"
+        ],
+        "security": [
+          {
+            "AdminSession": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/concurrency_settings_update"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Concurrency setting saved and applied.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/concurrency_save_response"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "maxConcurrentRequests is not an integer from 1 to 100."
+          },
+          "401": {
+            "description": "Admin authentication required."
+          },
+          "500": {
+            "description": "Concurrency settings could not be saved."
+          }
+        }
+      }
+    },
+    "/api/admin/generate": {
+      "post": {
+        "summary": "Submit a generation request from the admin panel.",
+        "tags": [
+          "admin",
+          "concurrency"
+        ],
+        "security": [
+          {
+            "AdminSession": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Generation submitted."
+          },
+          "400": {
+            "description": "A prompt is required."
+          },
+          "401": {
+            "description": "Admin authentication required."
+          },
+          "429": {
+            "$ref": "#/components/responses/ConcurrencyLimitExceeded"
+          }
+        }
+      }
+    },
+    "/v1/responses": {
+      "post": {
+        "summary": "Generate music using the OpenAI Responses format.",
+        "tags": [
+          "default",
+          "concurrency"
+        ],
+        "security": [
+          {
+            "BearerAuth": []
+          },
+          {
+            "ApiKeyAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Generation completed."
+          },
+          "400": {
+            "description": "Invalid input."
+          },
+          "401": {
+            "description": "API key required or invalid."
+          },
+          "429": {
+            "$ref": "#/components/responses/ConcurrencyLimitExceeded"
+          }
+        }
+      }
+    },
+    "/api/generate": {
+      "post": {
+        "summary": "Generate audio based on Prompt.",
+        "description": "It will automatically fill in the lyrics.\n\n2 audio files will be generated for each request, consuming a total of 10 credits.\n\n`wait_audio` can be set to API mode:\n\n• By default, it is set to `false`, which indicates the background mode. It will only return audio task information, and you will need to call the get API to retrieve detailed audio information.\n\n• If set to `true`, it simulates synchronous mode. The API will wait for a maximum of 100s until the audio is generated, and will directly return the audio link and other information. Recommend using in GPTs and other agents.",
+        "tags": [
+          "default"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "prompt",
+                  "make_instrumental",
+                  "wait_audio"
+                ],
+                "properties": {
+                  "prompt": {
+                    "type": "string",
+                    "description": "Prompt",
+                    "example": "A popular heavy metal song about war, sung by a deep-voiced male singer, slowly and melodiously. The lyrics depict the sorrow of people after the war."
+                  },
+                  "make_instrumental": {
+                    "type": "boolean",
+                    "description": "Whether to generate instrumental music",
+                    "example": "false"
+                  },
+                  "model": {
+                    "type": "string",
+                    "description": "Public Suno model ID. Defaults to suno-music (currently Suno V5.5 / chirp-fenix). Raw chirp-* identifiers remain pass-through compatible. Availability depends on the account plan and upstream permissions.",
+                    "default": "suno-music",
+                    "example": "suno-music"
+                  },
+                  "voice_id": {
+                    "type": "string",
+                    "description": "Optional public Suno +Voice UUID or https://suno.com/voice/<id> URL. Private Voices and make_instrumental=true are rejected."
+                  },
+                  "account_affinity": {
+                    "type": "string",
+                    "description": "Opaque signed value selecting the generation target account. A public Voice may be owned by a different account."
+                  },
+                  "persona_id": {
+                    "type": "string",
+                    "deprecated": true,
+                    "description": "Compatibility alias for voice_id."
+                  },
+                  "wait_audio": {
+                    "type": "boolean",
+                    "description": "Whether to wait for music generation, default is false, directly return audio task information; set to true, will wait for up to 100s until the audio is generated.",
+                    "example": "false"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "required": [
+                      "0",
+                      "1"
+                    ],
+                    "properties": [
+                      {
+                        "$ref": "#/components/schemas/audio_info"
+                      },
+                      {
+                        "$ref": "#/components/schemas/audio_info"
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "429": {
+            "$ref": "#/components/responses/ConcurrencyLimitExceeded"
+          }
+        }
+      }
+    },
+    "/v1/chat/completions": {
+      "post": {
+        "summary": "Generate audio based on Prompt - OpenAI API format compatibility.",
+        "description": "Convert the `/api/generate` API to be compatible with the OpenAI `/v1/chat/completions` API format. \n\nGenerally used in OpenAI compatible clients.",
+        "tags": [
+          "default"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "prompt"
+                ],
+                "properties": {
+                  "prompt": {
+                    "type": "string",
+                    "description": "Prompt",
+                    "example": "A popular heavy metal song about war, sung by a deep-voiced male singer, slowly and melodiously. The lyrics depict the sorrow of people after the war."
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "string",
+                      "description": "Text description for music, with details like title, album cover, lyrics, and more."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "429": {
+            "$ref": "#/components/responses/ConcurrencyLimitExceeded"
+          }
+        }
+      }
+    },
+    "/api/upload_audio": {
+      "post": {
+        "summary": "Upload audio for a later Cover request",
+        "description": "Measures duration with server-side FFprobe. Files <=30.000s use direct upload; files >30.000s use the synchronous Studio fast uploader (1800s default) with no direct fallback. Send a stable Idempotency-Key for fast uploads.",
+        "tags": [
+          "default"
+        ],
+        "parameters": [
+          {
+            "in": "header",
+            "name": "Idempotency-Key",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "maxLength": 512
+            },
+            "description": "Stable content-and-metadata operation key. Completed fast uploads replay their result; running keys return 409; submission_unknown keys never auto-retry. Use /api/upload_audio/reconcile for a read-only status check; an explicitly authorized replay must use a new key."
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "audio_file"
+                ],
+                "properties": {
+                  "audio_file": {
+                    "type": "string",
+                    "format": "binary"
+                  },
+                  "title": {
+                    "type": "string",
+                    "example": "Uploaded source"
+                  },
+                  "prompt": {
+                    "type": "string",
+                    "description": "Optional source description or lyrics metadata."
+                  },
+                  "image_url": {
+                    "type": "string",
+                    "format": "uri"
+                  },
+                  "extension": {
+                    "type": "string",
+                    "example": "mp3"
+                  },
+                  "upload_type": {
+                    "type": "string",
+                    "default": "file_upload"
+                  },
+                  "pool": {
+                    "type": "string",
+                    "enum": [
+                      "basic",
+                      "super",
+                      "heavy"
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Direct upload or completed Studio project clip.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "upload_method",
+                    "upload_id",
+                    "clip_id",
+                    "duration_seconds",
+                    "portable_clip",
+                    "account_affinity"
+                  ],
+                  "properties": {
+                    "upload_method": {
+                      "type": "string",
+                      "enum": [
+                        "direct",
+                        "studio_fast"
+                      ]
+                    },
+                    "upload_id": {
+                      "type": "string"
+                    },
+                    "upload_id_kind": {
+                      "type": "string",
+                      "enum": [
+                        "studio_project"
+                      ]
+                    },
+                    "studio_project_id": {
+                      "type": "string"
+                    },
+                    "clip_id": {
+                      "type": "string"
+                    },
+                    "song_url": {
+                      "type": "string",
+                      "format": "uri"
+                    },
+                    "duration_seconds": {
+                      "type": "number"
+                    },
+                    "portable_clip": {
+                      "type": "boolean",
+                      "description": "true for Studio-rendered clips that were verified for cross-account lookup, Cover and Extend. This is not Suno is_public."
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "string"
+                    },
+                    "account_affinity": {
+                      "type": "string",
+                      "description": "Opaque signed value; do not modify it. It is not a Cookie or bearer credential."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Idempotency conflict/in progress, duplicate catalog audio, or bound account unavailable."
+          },
+          "422": {
+            "description": "Duration could not be determined or Suno definitively rejected the upload."
+          },
+          "429": {
+            "description": "Fast uploader or account pool is busy; submission_state is not_submitted."
+          },
+          "502": {
+            "description": "A Studio project exists but the final clip is uncertain; submission_state is submission_unknown and replay is blocked."
+          },
+          "503": {
+            "description": "Runtime/account unavailable before submission."
+          },
+          "504": {
+            "description": "Fast upload timed out; submission_state reports whether a project was observed."
+          }
+        }
+      }
+    },
+    "/api/cover": {
+      "post": {
+        "summary": "Generate a Cover from a source clip",
+        "description": "Generates two Cover clips. Any source created by /api/upload_audio (including portable Studio fast uploads) must use the returned account_affinity; cross-account Cover is not supported upstream.",
+        "tags": [
+          "default"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "clip_id",
+                  "tags",
+                  "title"
+                ],
+                "properties": {
+                  "clip_id": {
+                    "type": "string",
+                    "description": "Source clip returned by /api/upload_audio."
+                  },
+                  "account_affinity": {
+                    "type": "string",
+                    "description": "Owning account affinity returned by /api/upload_audio. Required for uploaded sources; do not replace it with another account. A public Voice may belong to a different account."
+                  },
+                  "source_upload": {
+                    "type": "boolean",
+                    "description": "Internal routing marker used by the local client to fail closed when an uploaded source has no affinity."
+                  },
+                  "tags": {
+                    "type": "string",
+                    "description": "Cover style and genre tags."
+                  },
+                  "title": {
+                    "type": "string"
+                  },
+                  "prompt": {
+                    "type": "string",
+                    "description": "Lyrics; lyrics takes precedence when both fields are supplied."
+                  },
+                  "lyrics": {
+                    "type": "string"
+                  },
+                  "negative_tags": {
+                    "type": "string"
+                  },
+                  "model": {
+                    "type": "string",
+                    "default": "suno-music"
+                  },
+                  "voice_id": {
+                    "type": "string",
+                    "description": "Optional public Suno +Voice UUID or https://suno.com/voice/<id> URL. Private Voices are rejected."
+                  },
+                  "persona_id": {
+                    "type": "string",
+                    "deprecated": true,
+                    "description": "Legacy persona id. It is treated as a Voice when persona_model is voice_persona."
+                  },
+                  "persona_model": {
+                    "type": "string",
+                    "deprecated": true,
+                    "enum": [
+                      "style_persona",
+                      "voice_persona"
+                    ]
+                  },
+                  "wait_audio": {
+                    "type": "boolean",
+                    "default": false
+                  },
+                  "pool": {
+                    "type": "string",
+                    "enum": [
+                      "basic",
+                      "super",
+                      "heavy"
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Two submitted or completed Cover clips.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/audio_info"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Missing clip id or invalid account-affinity token."
+          },
+          "409": {
+            "description": "The source-owning account is temporarily unavailable."
+          },
+          "429": {
+            "$ref": "#/components/responses/ConcurrencyLimitExceeded"
+          }
+        }
+      }
+    },
+    "/api/custom_generate": {
+      "post": {
+        "summary": "Generate Audio - Custom Mode",
+        "description": "The custom mode enables users to provide additional details about the music, such as music genre, lyrics, and more.\n\n 2 audio files will be generated for each request, consuming a total of 10 credits. \n\n `wait_audio` can be set to API mode:\n\n• By default, it is set to false, which indicates the background mode. It will only return audio task information, and you will need to call the get API to retrieve detailed audio information.\n\n• If set to true, it simulates synchronous mode. The API will wait for a maximum of 100s until the audio is generated, and will directly return the audio link and other information. Recommend using in GPTs and other agents.",
+        "tags": [
+          "default"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "prompt",
+                  "tags",
+                  "title"
+                ],
+                "properties": {
+                  "prompt": {
+                    "type": "string",
+                    "description": "Detailed prompt, including information such as music lyrics.",
+                    "example": "[Verse 1]\nCruel flames of war engulf this land\nBattlefields filled with death and dread\nInnocent souls in darkness, they rest\nMy heart trembles in this silent test\n\n[Verse 2]\nPeople weep for loved ones lost\nBattered bodies bear the cost\nSeeking peace and hope once known\nOur grief transforms to hearts of stone\n\n[Chorus]\nSilent battlegrounds, no birds' song\nShadows of war, where we don't belong\nMay flowers of peace bloom in this place\nLet's guard this precious dream with grace\n\n[Bridge]\nThrough the ashes, we will rise\nHand in hand, towards peaceful skies\nNo more sorrow, no more pain\nTogether, we'll break these chains\n\n[Chorus]\nSilent battlegrounds, no birds' song\nShadows of war, where we don't belong\nMay flowers of peace bloom in this place\nLet's guard this precious dream with grace\n\n[Outro]\nIn unity, our strength will grow\nA brighter future, we'll soon know\nFrom the ruins, hope will spring\nA new dawn, we'll together bring"
+                  },
+                  "tags": {
+                    "type": "string",
+                    "description": "Music genre",
+                    "example": "pop metal male melancholic"
+                  },
+                  "negative_tags": {
+                    "type": "string",
+                    "description": "Negative Music genre",
+                    "example": "female edm techno"
+                  },
+                  "title": {
+                    "type": "string",
+                    "description": "Music title",
+                    "example": "Silent Battlefield"
+                  },
+                  "make_instrumental": {
+                    "type": "boolean",
+                    "description": "Whether to generate instrumental music",
+                    "example": "false"
+                  },
+                  "model": {
+                    "type": "string",
+                    "description": "Public Suno model ID. Defaults to suno-music (currently Suno V5.5 / chirp-fenix). Raw chirp-* identifiers remain pass-through compatible. Availability depends on the account plan and upstream permissions.",
+                    "default": "suno-music",
+                    "example": "suno-music"
+                  },
+                  "voice_id": {
+                    "type": "string",
+                    "description": "Optional public Suno +Voice UUID or https://suno.com/voice/<id> URL. Private Voices and make_instrumental=true are rejected."
+                  },
+                  "account_affinity": {
+                    "type": "string",
+                    "description": "Opaque signed value selecting the generation target account. A public Voice may be owned by a different account."
+                  },
+                  "persona_id": {
+                    "type": "string",
+                    "deprecated": true,
+                    "description": "Compatibility alias for voice_id."
+                  },
+                  "wait_audio": {
+                    "type": "boolean",
+                    "description": "Whether to wait for music generation, default is false, directly return audio task information; set to true, will wait for up to 100s until the audio is generated.",
+                    "example": "false"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "required": [
+                      "0",
+                      "1"
+                    ],
+                    "properties": [
+                      {
+                        "$ref": "#/components/schemas/audio_info"
+                      },
+                      {
+                        "$ref": "#/components/schemas/audio_info"
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "429": {
+            "$ref": "#/components/responses/ConcurrencyLimitExceeded"
+          }
+        }
+      }
+    },
+    "/api/extend_audio": {
+      "post": {
+        "summary": "Extend audio length.",
+        "description": "Extend audio length. Accepts optional account_affinity; portable Studio clips can be extended by another pool account.",
+        "tags": [
+          "default"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "audio_id"
+                ],
+                "properties": {
+                  "audio_id": {
+                    "type": "string",
+                    "description": "The ID of the audio clip to extend.",
+                    "example": "e76498dc-6ab4-4a10-a19f-8a095790e28d"
+                  },
+                  "prompt": {
+                    "type": "string",
+                    "description": "Detailed prompt, including information such as music lyrics.",
+                    "example": "[lrc]Silent battlegrounds, no birds' song\nShadows of war, where we don't belong\nMay flowers of peace bloom in this place\nLet's guard this precious dream with grace\n[endlrc]"
+                  },
+                  "continue_at": {
+                    "type": "string",
+                    "description": "Extend a new clip from a song at mm:ss(e.g. 00:30). Default extends from the end of the song.",
+                    "example": "109.96"
+                  },
+                  "title": {
+                    "type": "string",
+                    "description": "Music title",
+                    "example": ""
+                  },
+                  "tags": {
+                    "type": "string",
+                    "description": "Music genre",
+                    "example": ""
+                  },
+                  "negative_tags": {
+                    "type": "string",
+                    "description": "Negative Music genre",
+                    "example": ""
+                  },
+                  "model": {
+                    "type": "string",
+                    "description": "Public Suno model ID. Defaults to suno-music (currently Suno V5.5 / chirp-fenix). Raw chirp-* identifiers remain pass-through compatible. Availability depends on the account plan and upstream permissions.",
+                    "default": "suno-music",
+                    "example": "suno-music"
+                  },
+                  "account_affinity": {
+                    "type": "string",
+                    "description": "Optional signed target account affinity. Omit for a portable Studio clip to select another account."
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Extension submitted or completed."
+          },
+          "429": {
+            "$ref": "#/components/responses/ConcurrencyLimitExceeded"
+          }
+        }
+      }
+    },
+    "/api/generate_stems": {
+      "post": {
+        "summary": "Make stem tracks (separate audio and music track).",
+        "description": "Make stem tracks. Suno enforces clip ownership even when a clip is public/portable; pass the owning account affinity.",
+        "tags": [
+          "default"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "audio_id"
+                ],
+                "properties": {
+                  "audio_id": {
+                    "type": "string",
+                    "description": "The ID of the song to generate stems for.",
+                    "example": "e76498dc-6ab4-4a10-a19f-8a095790e28d"
+                  },
+                  "account_affinity": {
+                    "type": "string",
+                    "description": "Signed affinity for the account that owns the clip. Cross-account public/portable Stems are not supported upstream."
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/schemas/audio_info"
+          },
+          "403": {
+            "description": "Suno rejected Stems because the selected account does not own the clip."
+          },
+          "429": {
+            "$ref": "#/components/responses/ConcurrencyLimitExceeded"
+          }
+        }
+      }
+    },
+    "/api/generate_lyrics": {
+      "post": {
+        "summary": "Generate lyrics based on Prompt.",
+        "description": "Generate lyrics based on Prompt.",
+        "tags": [
+          "default"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "prompt"
+                ],
+                "properties": {
+                  "prompt": {
+                    "type": "string",
+                    "description": "Prompt",
+                    "example": "A soothing lullaby"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "text": {
+                      "type": "string",
+                      "description": "Lyrics"
+                    },
+                    "title": {
+                      "type": "string",
+                      "description": "music title"
+                    },
+                    "status": {
+                      "type": "string",
+                      "description": "Status"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "429": {
+            "$ref": "#/components/responses/ConcurrencyLimitExceeded"
+          }
+        }
+      }
+    },
+    "/api/get": {
+      "get": {
+        "summary": "Get audio information",
+        "description": "",
+        "tags": [
+          "default"
+        ],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "ids",
+            "description": "Audio IDs, separated by commas. Leave blank to return a list of all music.",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "page",
+            "description": "Page number",
+            "required": false,
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "in": "query",
+            "name": "account_affinity",
+            "description": "Optional target-account affinity used for deterministic polling in multi-account mode.",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "required": [
+                      "0",
+                      "1"
+                    ],
+                    "properties": [
+                      {
+                        "$ref": "#/components/schemas/audio_info"
+                      },
+                      {
+                        "$ref": "#/components/schemas/audio_info"
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/get_limit": {
+      "get": {
+        "summary": "Get quota information.",
+        "description": "",
+        "tags": [
+          "default"
+        ],
+        "responses": {
+          "200": {
+            "description": "success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "credits_left",
+                    "period",
+                    "monthly_limit",
+                    "monthly_usage"
+                  ],
+                  "properties": {
+                    "credits_left": {
+                      "type": "number",
+                      "description": "Remaining credits,Each generated audio consumes 5 credits."
+                    },
+                    "period": {
+                      "type": "string",
+                      "description": "Period"
+                    },
+                    "monthly_limit": {
+                      "type": "number",
+                      "description": "Monthly limit"
+                    },
+                    "monthly_usage": {
+                      "type": "number",
+                      "description": "Monthly usage"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/get_aligned_lyrics": {
+      "get": {
+        "summary": "Get lyric alignment.",
+        "description": "Get lyric alignment.",
+        "tags": [
+          "default"
+        ],
+        "parameters": [
+          {
+            "name": "song_id",
+            "in": "query",
+            "required": true,
+            "description": "Song ID",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/schemas/audio_info"
+          }
+        }
+      }
+    },
+    "/api/clip": {
+      "get": {
+        "summary": "Get clip information based on ID.",
+        "description": "Retrieve specific clip information using the provided clip ID as a query parameter.",
+        "tags": [
+          "default"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "required": true,
+            "description": "Clip ID",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "account_affinity",
+            "in": "query",
+            "required": false,
+            "description": "Optional target-account affinity used for deterministic lookup in multi-account mode.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/audio_info"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Missing parameter id",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "Missing parameter id"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "Internal server error"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/concat": {
+      "post": {
+        "summary": "Generate the whole song from extensions.",
+        "description": "Concatenate an Extend result. Suno requires the account that owns the Extend clip; pass its returned account_affinity.",
+        "tags": [
+          "default"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "clip_id"
+                ],
+                "properties": {
+                  "clip_id": {
+                    "type": "string",
+                    "description": "Clip ID"
+                  },
+                  "account_affinity": {
+                    "type": "string",
+                    "description": "Signed affinity returned with the Extend result. Another account cannot Concat that private Extend clip."
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/audio_info"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Clip id is required",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "Clip id is required"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "402": {
+            "description": "Payment required",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "Payment required"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "429": {
+            "$ref": "#/components/responses/ConcurrencyLimitExceeded"
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "Internal server error"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/voices": {
+      "get": {
+        "summary": "Resolve and validate one public Suno +Voice",
+        "description": "Only public persona_type=vox Voices are supported. Account-private Voice listing is intentionally unavailable. The optional account_affinity selects the account that must be able to use this public Voice; a public Voice may be owned by a different account.",
+        "tags": [
+          "default"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "required": true,
+            "description": "Public Voice UUID or https://suno.com/voice/<id> URL.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "account_affinity",
+            "in": "query",
+            "required": false,
+            "description": "Opaque generation-target affinity returned by a prior /api/voices or /api/upload_audio call.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "pool",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "basic",
+                "super",
+                "heavy"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Validated public Voice and generation-target affinity.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "voice"
+                  ],
+                  "properties": {
+                    "voice": {
+                      "type": "object",
+                      "required": [
+                        "id",
+                        "voice_id",
+                        "persona_type",
+                        "is_public"
+                      ],
+                      "properties": {
+                        "id": {
+                          "type": "string"
+                        },
+                        "voice_id": {
+                          "type": "string"
+                        },
+                        "name": {
+                          "type": "string"
+                        },
+                        "description": {
+                          "type": "string"
+                        },
+                        "persona_type": {
+                          "type": "string",
+                          "enum": [
+                            "vox"
+                          ]
+                        },
+                        "is_public": {
+                          "type": "boolean",
+                          "enum": [
+                            true
+                          ]
+                        },
+                        "is_owned": {
+                          "type": "boolean"
+                        },
+                        "image_s3_id": {
+                          "type": "string"
+                        },
+                        "source": {
+                          "type": "string"
+                        }
+                      }
+                    },
+                    "account_affinity": {
+                      "type": "string",
+                      "description": "Opaque generation-target affinity; return it with generation or deterministic polling."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Missing/invalid id, private Voice, non-Voice persona, or invalid account-affinity token."
+          },
+          "409": {
+            "description": "The affinity-bound account is temporarily unavailable."
+          }
+        }
+      }
+    },
+    "/api/persona": {
+      "get": {
+        "summary": "Get persona information and clips.",
+        "description": "Retrieve persona information, including associated clips and pagination data.",
+        "tags": [
+          "default"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "required": true,
+            "description": "Persona ID",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "description": "Page number (defaults to 1)",
+            "schema": {
+              "type": "integer",
+              "default": 1
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "persona": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "description": "Persona ID"
+                        },
+                        "name": {
+                          "type": "string",
+                          "description": "Persona name"
+                        },
+                        "description": {
+                          "type": "string",
+                          "description": "Persona description"
+                        },
+                        "image_s3_id": {
+                          "type": "string",
+                          "description": "Persona image URL"
+                        },
+                        "root_clip_id": {
+                          "type": "string",
+                          "description": "Root clip ID"
+                        },
+                        "clip": {
+                          "type": "object",
+                          "description": "Root clip information"
+                        },
+                        "persona_clips": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "clip": {
+                                "type": "object",
+                                "description": "Clip information"
+                              }
+                            }
+                          }
+                        },
+                        "is_suno_persona": {
+                          "type": "boolean",
+                          "description": "Whether this is a Suno official persona"
+                        },
+                        "is_public": {
+                          "type": "boolean",
+                          "description": "Whether this persona is public"
+                        },
+                        "upvote_count": {
+                          "type": "integer",
+                          "description": "Number of upvotes"
+                        },
+                        "clip_count": {
+                          "type": "integer",
+                          "description": "Number of clips"
+                        }
+                      }
+                    },
+                    "total_results": {
+                      "type": "integer",
+                      "description": "Total number of results"
+                    },
+                    "current_page": {
+                      "type": "integer",
+                      "description": "Current page number"
+                    },
+                    "is_following": {
+                      "type": "boolean",
+                      "description": "Whether the current user is following this persona"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Missing parameter id",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "Missing parameter id"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "Internal server error"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/accounts/refresh": {
+      "post": {
+        "summary": "Refresh account-pool status.",
+        "description": "Implemented by src/app/api/admin/accounts/refresh/route.ts. Credentials and account affinity are runtime values; never commit them.",
+        "operationId": "post_api_admin_accounts_refresh",
+        "responses": {
+          "200": {
+            "description": "Successful response."
+          },
+          "400": {
+            "description": "Invalid request."
+          },
+          "401": {
+            "description": "Authentication or API key required."
+          },
+          "409": {
+            "description": "Conflict, active operation, or submission is unknown."
+          },
+          "429": {
+            "description": "Concurrency limit exceeded."
+          },
+          "503": {
+            "description": "Provider or local runtime unavailable."
+          }
+        }
+      }
+    },
+    "/api/admin/accounts": {
+      "get": {
+        "summary": "Handle GET /api/admin/accounts.",
+        "description": "Implemented by src/app/api/admin/accounts/route.ts. Credentials and account affinity are runtime values; never commit them.",
+        "operationId": "get_api_admin_accounts",
+        "responses": {
+          "200": {
+            "description": "Successful response."
+          },
+          "400": {
+            "description": "Invalid request."
+          },
+          "401": {
+            "description": "Authentication or API key required."
+          },
+          "409": {
+            "description": "Conflict, active operation, or submission is unknown."
+          },
+          "429": {
+            "description": "Concurrency limit exceeded."
+          },
+          "503": {
+            "description": "Provider or local runtime unavailable."
+          }
+        }
+      },
+      "post": {
+        "summary": "Handle POST /api/admin/accounts.",
+        "description": "Implemented by src/app/api/admin/accounts/route.ts. Credentials and account affinity are runtime values; never commit them.",
+        "operationId": "post_api_admin_accounts",
+        "responses": {
+          "200": {
+            "description": "Successful response."
+          },
+          "400": {
+            "description": "Invalid request."
+          },
+          "401": {
+            "description": "Authentication or API key required."
+          },
+          "409": {
+            "description": "Conflict, active operation, or submission is unknown."
+          },
+          "429": {
+            "description": "Concurrency limit exceeded."
+          },
+          "503": {
+            "description": "Provider or local runtime unavailable."
+          }
+        }
+      },
+      "patch": {
+        "summary": "Handle PATCH /api/admin/accounts.",
+        "description": "Implemented by src/app/api/admin/accounts/route.ts. Credentials and account affinity are runtime values; never commit them.",
+        "operationId": "patch_api_admin_accounts",
+        "responses": {
+          "200": {
+            "description": "Successful response."
+          },
+          "400": {
+            "description": "Invalid request."
+          },
+          "401": {
+            "description": "Authentication or API key required."
+          },
+          "409": {
+            "description": "Conflict, active operation, or submission is unknown."
+          },
+          "429": {
+            "description": "Concurrency limit exceeded."
+          },
+          "503": {
+            "description": "Provider or local runtime unavailable."
+          }
+        }
+      },
+      "delete": {
+        "summary": "Handle DELETE /api/admin/accounts.",
+        "description": "Implemented by src/app/api/admin/accounts/route.ts. Credentials and account affinity are runtime values; never commit them.",
+        "operationId": "delete_api_admin_accounts",
+        "responses": {
+          "200": {
+            "description": "Successful response."
+          },
+          "400": {
+            "description": "Invalid request."
+          },
+          "401": {
+            "description": "Authentication or API key required."
+          },
+          "409": {
+            "description": "Conflict, active operation, or submission is unknown."
+          },
+          "429": {
+            "description": "Concurrency limit exceeded."
+          },
+          "503": {
+            "description": "Provider or local runtime unavailable."
+          }
+        }
+      }
+    },
+    "/api/admin/accounts/verify": {
+      "post": {
+        "summary": "Verify an account-pool entry.",
+        "description": "Implemented by src/app/api/admin/accounts/verify/route.ts. Credentials and account affinity are runtime values; never commit them.",
+        "operationId": "post_api_admin_accounts_verify",
+        "responses": {
+          "200": {
+            "description": "Successful response."
+          },
+          "400": {
+            "description": "Invalid request."
+          },
+          "401": {
+            "description": "Authentication or API key required."
+          },
+          "409": {
+            "description": "Conflict, active operation, or submission is unknown."
+          },
+          "429": {
+            "description": "Concurrency limit exceeded."
+          },
+          "503": {
+            "description": "Provider or local runtime unavailable."
+          }
+        }
+      }
+    },
+    "/api/admin/apikey": {
+      "get": {
+        "summary": "Handle GET /api/admin/apikey.",
+        "description": "Implemented by src/app/api/admin/apikey/route.ts. Credentials and account affinity are runtime values; never commit them.",
+        "operationId": "get_api_admin_apikey",
+        "responses": {
+          "200": {
+            "description": "Successful response."
+          },
+          "400": {
+            "description": "Invalid request."
+          },
+          "401": {
+            "description": "Authentication or API key required."
+          },
+          "409": {
+            "description": "Conflict, active operation, or submission is unknown."
+          },
+          "429": {
+            "description": "Concurrency limit exceeded."
+          },
+          "503": {
+            "description": "Provider or local runtime unavailable."
+          }
+        }
+      },
+      "put": {
+        "summary": "Handle PUT /api/admin/apikey.",
+        "description": "Implemented by src/app/api/admin/apikey/route.ts. Credentials and account affinity are runtime values; never commit them.",
+        "operationId": "put_api_admin_apikey",
+        "responses": {
+          "200": {
+            "description": "Successful response."
+          },
+          "400": {
+            "description": "Invalid request."
+          },
+          "401": {
+            "description": "Authentication or API key required."
+          },
+          "409": {
+            "description": "Conflict, active operation, or submission is unknown."
+          },
+          "429": {
+            "description": "Concurrency limit exceeded."
+          },
+          "503": {
+            "description": "Provider or local runtime unavailable."
+          }
+        }
+      }
+    },
+    "/api/admin/captcha/probe": {
+      "post": {
+        "summary": "Probe configured CAPTCHA providers.",
+        "description": "Implemented by src/app/api/admin/captcha/probe/route.ts. Credentials and account affinity are runtime values; never commit them.",
+        "operationId": "post_api_admin_captcha_probe",
+        "responses": {
+          "200": {
+            "description": "Successful response."
+          },
+          "400": {
+            "description": "Invalid request."
+          },
+          "401": {
+            "description": "Authentication or API key required."
+          },
+          "409": {
+            "description": "Conflict, active operation, or submission is unknown."
+          },
+          "429": {
+            "description": "Concurrency limit exceeded."
+          },
+          "503": {
+            "description": "Provider or local runtime unavailable."
+          }
+        }
+      }
+    },
+    "/api/admin/captcha": {
+      "get": {
+        "summary": "Handle GET /api/admin/captcha.",
+        "description": "Implemented by src/app/api/admin/captcha/route.ts. Credentials and account affinity are runtime values; never commit them.",
+        "operationId": "get_api_admin_captcha",
+        "responses": {
+          "200": {
+            "description": "Successful response."
+          },
+          "400": {
+            "description": "Invalid request."
+          },
+          "401": {
+            "description": "Authentication or API key required."
+          },
+          "409": {
+            "description": "Conflict, active operation, or submission is unknown."
+          },
+          "429": {
+            "description": "Concurrency limit exceeded."
+          },
+          "503": {
+            "description": "Provider or local runtime unavailable."
+          }
+        }
+      },
+      "put": {
+        "summary": "Handle PUT /api/admin/captcha.",
+        "description": "Implemented by src/app/api/admin/captcha/route.ts. Credentials and account affinity are runtime values; never commit them.",
+        "operationId": "put_api_admin_captcha",
+        "responses": {
+          "200": {
+            "description": "Successful response."
+          },
+          "400": {
+            "description": "Invalid request."
+          },
+          "401": {
+            "description": "Authentication or API key required."
+          },
+          "409": {
+            "description": "Conflict, active operation, or submission is unknown."
+          },
+          "429": {
+            "description": "Concurrency limit exceeded."
+          },
+          "503": {
+            "description": "Provider or local runtime unavailable."
+          }
+        }
+      }
+    },
+    "/api/admin/limit": {
+      "get": {
+        "summary": "Handle GET /api/admin/limit.",
+        "description": "Implemented by src/app/api/admin/limit/route.ts. Credentials and account affinity are runtime values; never commit them.",
+        "operationId": "get_api_admin_limit",
+        "responses": {
+          "200": {
+            "description": "Successful response."
+          },
+          "400": {
+            "description": "Invalid request."
+          },
+          "401": {
+            "description": "Authentication or API key required."
+          },
+          "409": {
+            "description": "Conflict, active operation, or submission is unknown."
+          },
+          "429": {
+            "description": "Concurrency limit exceeded."
+          },
+          "503": {
+            "description": "Provider or local runtime unavailable."
+          }
+        }
+      }
+    },
+    "/api/admin/session": {
+      "get": {
+        "summary": "Handle GET /api/admin/session.",
+        "description": "Implemented by src/app/api/admin/session/route.ts. Credentials and account affinity are runtime values; never commit them.",
+        "operationId": "get_api_admin_session",
+        "responses": {
+          "200": {
+            "description": "Successful response."
+          },
+          "400": {
+            "description": "Invalid request."
+          },
+          "401": {
+            "description": "Authentication or API key required."
+          },
+          "409": {
+            "description": "Conflict, active operation, or submission is unknown."
+          },
+          "429": {
+            "description": "Concurrency limit exceeded."
+          },
+          "503": {
+            "description": "Provider or local runtime unavailable."
+          }
+        }
+      },
+      "post": {
+        "summary": "Handle POST /api/admin/session.",
+        "description": "Implemented by src/app/api/admin/session/route.ts. Credentials and account affinity are runtime values; never commit them.",
+        "operationId": "post_api_admin_session",
+        "responses": {
+          "200": {
+            "description": "Successful response."
+          },
+          "400": {
+            "description": "Invalid request."
+          },
+          "401": {
+            "description": "Authentication or API key required."
+          },
+          "409": {
+            "description": "Conflict, active operation, or submission is unknown."
+          },
+          "429": {
+            "description": "Concurrency limit exceeded."
+          },
+          "503": {
+            "description": "Provider or local runtime unavailable."
+          }
+        }
+      },
+      "delete": {
+        "summary": "Handle DELETE /api/admin/session.",
+        "description": "Implemented by src/app/api/admin/session/route.ts. Credentials and account affinity are runtime values; never commit them.",
+        "operationId": "delete_api_admin_session",
+        "responses": {
+          "200": {
+            "description": "Successful response."
+          },
+          "400": {
+            "description": "Invalid request."
+          },
+          "401": {
+            "description": "Authentication or API key required."
+          },
+          "409": {
+            "description": "Conflict, active operation, or submission is unknown."
+          },
+          "429": {
+            "description": "Concurrency limit exceeded."
+          },
+          "503": {
+            "description": "Provider or local runtime unavailable."
+          }
+        }
+      }
+    },
+    "/api/admin/songs": {
+      "get": {
+        "summary": "Handle GET /api/admin/songs.",
+        "description": "Implemented by src/app/api/admin/songs/route.ts. Credentials and account affinity are runtime values; never commit them.",
+        "operationId": "get_api_admin_songs",
+        "responses": {
+          "200": {
+            "description": "Successful response."
+          },
+          "400": {
+            "description": "Invalid request."
+          },
+          "401": {
+            "description": "Authentication or API key required."
+          },
+          "409": {
+            "description": "Conflict, active operation, or submission is unknown."
+          },
+          "429": {
+            "description": "Concurrency limit exceeded."
+          },
+          "503": {
+            "description": "Provider or local runtime unavailable."
+          }
+        }
+      }
+    },
+    "/api/advanced_stems/render": {
+      "post": {
+        "summary": "Legacy Advanced Split multitrack render; permanently disabled.",
+        "description": "Implemented by src/app/api/advanced_stems/render/route.ts. Credentials and account affinity are runtime values; never commit them.",
+        "operationId": "post_api_advanced_stems_render",
+        "responses": {
+          "400": {
+            "description": "Invalid request."
+          },
+          "401": {
+            "description": "Authentication or API key required."
+          },
+          "409": {
+            "description": "Conflict, active operation, or submission is unknown."
+          },
+          "410": {
+            "description": "Legacy route disabled."
+          },
+          "429": {
+            "description": "Concurrency limit exceeded."
+          },
+          "503": {
+            "description": "Provider or local runtime unavailable."
+          }
+        }
+      }
+    },
+    "/api/advanced_stems": {
+      "get": {
+        "summary": "List or submit one Studio Advanced Split stem.",
+        "description": "Implemented by src/app/api/advanced_stems/route.ts. Credentials and account affinity are runtime values; never commit them.",
+        "operationId": "get_api_advanced_stems",
+        "responses": {
+          "200": {
+            "description": "Successful response."
+          },
+          "400": {
+            "description": "Invalid request."
+          },
+          "401": {
+            "description": "Authentication or API key required."
+          },
+          "409": {
+            "description": "Conflict, active operation, or submission is unknown."
+          },
+          "429": {
+            "description": "Concurrency limit exceeded."
+          },
+          "503": {
+            "description": "Provider or local runtime unavailable."
+          }
+        }
+      },
+      "post": {
+        "summary": "List or submit one Studio Advanced Split stem.",
+        "description": "Implemented by src/app/api/advanced_stems/route.ts. Credentials and account affinity are runtime values; never commit them.",
+        "operationId": "post_api_advanced_stems",
+        "responses": {
+          "200": {
+            "description": "Successful response."
+          },
+          "400": {
+            "description": "Invalid request."
+          },
+          "401": {
+            "description": "Authentication or API key required."
+          },
+          "409": {
+            "description": "Conflict, active operation, or submission is unknown."
+          },
+          "429": {
+            "description": "Concurrency limit exceeded."
+          },
+          "503": {
+            "description": "Provider or local runtime unavailable."
+          }
+        }
+      }
+    },
+    "/api/advanced_stems/wav": {
+      "post": {
+        "summary": "Legacy Advanced Split WAV download; permanently disabled.",
+        "description": "Implemented by src/app/api/advanced_stems/wav/route.ts. Credentials and account affinity are runtime values; never commit them.",
+        "operationId": "post_api_advanced_stems_wav",
+        "responses": {
+          "400": {
+            "description": "Invalid request."
+          },
+          "401": {
+            "description": "Authentication or API key required."
+          },
+          "409": {
+            "description": "Conflict, active operation, or submission is unknown."
+          },
+          "410": {
+            "description": "Legacy route disabled."
+          },
+          "429": {
+            "description": "Concurrency limit exceeded."
+          },
+          "503": {
+            "description": "Provider or local runtime unavailable."
+          }
+        }
+      }
+    },
+    "/api/clip/{clip_id}/download": {
+      "get": {
+        "summary": "Download a validated public or Studio clip.",
+        "description": "Implemented by src/app/api/clip/[clip_id]/download/route.ts. Credentials and account affinity are runtime values; never commit them.",
+        "operationId": "get_api_clip_clip_id_download",
+        "responses": {
+          "200": {
+            "description": "Successful response."
+          },
+          "400": {
+            "description": "Invalid request."
+          },
+          "401": {
+            "description": "Authentication or API key required."
+          },
+          "409": {
+            "description": "Conflict, active operation, or submission is unknown."
+          },
+          "429": {
+            "description": "Concurrency limit exceeded."
+          },
+          "503": {
+            "description": "Provider or local runtime unavailable."
+          }
+        }
+      }
+    },
+    "/api/clip/{clip_id}/metadata": {
+      "post": {
+        "summary": "Update authorized clip metadata.",
+        "description": "Implemented by src/app/api/clip/[clip_id]/metadata/route.ts. Credentials and account affinity are runtime values; never commit them.",
+        "operationId": "post_api_clip_clip_id_metadata",
+        "responses": {
+          "200": {
+            "description": "Successful response."
+          },
+          "400": {
+            "description": "Invalid request."
+          },
+          "401": {
+            "description": "Authentication or API key required."
+          },
+          "409": {
+            "description": "Conflict, active operation, or submission is unknown."
+          },
+          "429": {
+            "description": "Concurrency limit exceeded."
+          },
+          "503": {
+            "description": "Provider or local runtime unavailable."
+          }
+        }
+      }
+    },
+    "/api/studio/clip/{clip_id}/downbeats": {
+      "get": {
+        "summary": "Read Studio clip downbeat timing.",
+        "description": "Implemented by src/app/api/studio/clip/[clip_id]/downbeats/route.ts. Credentials and account affinity are runtime values; never commit them.",
+        "operationId": "get_api_studio_clip_clip_id_downbeats",
+        "responses": {
+          "200": {
+            "description": "Successful response."
+          },
+          "400": {
+            "description": "Invalid request."
+          },
+          "401": {
+            "description": "Authentication or API key required."
+          },
+          "409": {
+            "description": "Conflict, active operation, or submission is unknown."
+          },
+          "429": {
+            "description": "Concurrency limit exceeded."
+          },
+          "503": {
+            "description": "Provider or local runtime unavailable."
+          }
+        }
+      }
+    },
+    "/api/studio/clip/{clip_id}/download": {
+      "get": {
+        "summary": "Download a Studio clip as WAV.",
+        "description": "Implemented by src/app/api/studio/clip/[clip_id]/download/route.ts. Credentials and account affinity are runtime values; never commit them.",
+        "operationId": "get_api_studio_clip_clip_id_download",
+        "responses": {
+          "200": {
+            "description": "Successful response."
+          },
+          "400": {
+            "description": "Invalid request."
+          },
+          "401": {
+            "description": "Authentication or API key required."
+          },
+          "409": {
+            "description": "Conflict, active operation, or submission is unknown."
+          },
+          "429": {
+            "description": "Concurrency limit exceeded."
+          },
+          "503": {
+            "description": "Provider or local runtime unavailable."
+          }
+        }
+      }
+    },
+    "/api/studio/clips/{clip_id}/projects": {
+      "get": {
+        "summary": "List Studio projects associated with a clip.",
+        "description": "Implemented by src/app/api/studio/clips/[clip_id]/projects/route.ts. Credentials and account affinity are runtime values; never commit them.",
+        "operationId": "get_api_studio_clips_clip_id_projects",
+        "responses": {
+          "200": {
+            "description": "Successful response."
+          },
+          "400": {
+            "description": "Invalid request."
+          },
+          "401": {
+            "description": "Authentication or API key required."
+          },
+          "409": {
+            "description": "Conflict, active operation, or submission is unknown."
+          },
+          "429": {
+            "description": "Concurrency limit exceeded."
+          },
+          "503": {
+            "description": "Provider or local runtime unavailable."
+          }
+        }
+      }
+    },
+    "/api/studio/create-or-load-project-for-clip/{clip_id}": {
+      "post": {
+        "summary": "Create or load a Studio project for a clip.",
+        "description": "Implemented by src/app/api/studio/create-or-load-project-for-clip/[clip_id]/route.ts. Credentials and account affinity are runtime values; never commit them.",
+        "operationId": "post_api_studio_create_or_load_project_for_clip_clip_id",
+        "responses": {
+          "200": {
+            "description": "Successful response."
+          },
+          "400": {
+            "description": "Invalid request."
+          },
+          "401": {
+            "description": "Authentication or API key required."
+          },
+          "409": {
+            "description": "Conflict, active operation, or submission is unknown."
+          },
+          "429": {
+            "description": "Concurrency limit exceeded."
+          },
+          "503": {
+            "description": "Provider or local runtime unavailable."
+          }
+        }
+      }
+    },
+    "/api/studio/project/{project_id}": {
+      "get": {
+        "summary": "Read a Studio project.",
+        "description": "Implemented by src/app/api/studio/project/[project_id]/route.ts. Credentials and account affinity are runtime values; never commit them.",
+        "operationId": "get_api_studio_project_project_id",
+        "responses": {
+          "200": {
+            "description": "Successful response."
+          },
+          "400": {
+            "description": "Invalid request."
+          },
+          "401": {
+            "description": "Authentication or API key required."
+          },
+          "409": {
+            "description": "Conflict, active operation, or submission is unknown."
+          },
+          "429": {
+            "description": "Concurrency limit exceeded."
+          },
+          "503": {
+            "description": "Provider or local runtime unavailable."
+          }
+        }
+      }
+    },
+    "/api/studio/project/{project_id}/save": {
+      "post": {
+        "summary": "Save a Studio project state.",
+        "description": "Implemented by src/app/api/studio/project/[project_id]/save/route.ts. Credentials and account affinity are runtime values; never commit them.",
+        "operationId": "post_api_studio_project_project_id_save",
+        "responses": {
+          "200": {
+            "description": "Successful response."
+          },
+          "400": {
+            "description": "Invalid request."
+          },
+          "401": {
+            "description": "Authentication or API key required."
+          },
+          "409": {
+            "description": "Conflict, active operation, or submission is unknown."
+          },
+          "429": {
+            "description": "Concurrency limit exceeded."
+          },
+          "503": {
+            "description": "Provider or local runtime unavailable."
+          }
+        }
+      }
+    },
+    "/api/studio/project/{project_id}/trash": {
+      "post": {
+        "summary": "Archive a temporary Studio project.",
+        "description": "Implemented by src/app/api/studio/project/[project_id]/trash/route.ts. Credentials and account affinity are runtime values; never commit them.",
+        "operationId": "post_api_studio_project_project_id_trash",
+        "responses": {
+          "200": {
+            "description": "Successful response."
+          },
+          "400": {
+            "description": "Invalid request."
+          },
+          "401": {
+            "description": "Authentication or API key required."
+          },
+          "409": {
+            "description": "Conflict, active operation, or submission is unknown."
+          },
+          "429": {
+            "description": "Concurrency limit exceeded."
+          },
+          "503": {
+            "description": "Provider or local runtime unavailable."
+          }
+        }
+      }
+    },
+    "/api/upload_audio/reconcile": {
+      "post": {
+        "summary": "Read-only reconciliation for a Studio Fast Upload operation.",
+        "description": "Implemented by src/app/api/upload_audio/reconcile/route.ts. Credentials and account affinity are runtime values; never commit them.",
+        "operationId": "post_api_upload_audio_reconcile",
+        "responses": {
+          "200": {
+            "description": "Successful response."
+          },
+          "400": {
+            "description": "Invalid request."
+          },
+          "401": {
+            "description": "Authentication or API key required."
+          },
+          "409": {
+            "description": "Conflict, active operation, or submission is unknown."
+          },
+          "429": {
+            "description": "Concurrency limit exceeded."
+          },
+          "503": {
+            "description": "Provider or local runtime unavailable."
+          }
+        }
+      }
+    },
+    "/v1/images/generations": {
+      "post": {
+        "summary": "Handle POST /v1/images/generations.",
+        "description": "Implemented by src/app/v1/images/generations/route.ts. Credentials and account affinity are runtime values; never commit them.",
+        "operationId": "post_v1_images_generations",
+        "responses": {
+          "400": {
+            "description": "Invalid request."
+          },
+          "401": {
+            "description": "Authentication or API key required."
+          },
+          "409": {
+            "description": "Conflict, active operation, or submission is unknown."
+          },
+          "429": {
+            "description": "Concurrency limit exceeded."
+          },
+          "501": {
+            "description": "Capability is not implemented."
+          },
+          "503": {
+            "description": "Provider or local runtime unavailable."
+          }
+        }
+      }
+    },
+    "/v1/models/{model}": {
+      "get": {
+        "summary": "Handle GET /v1/models/{model}.",
+        "description": "Implemented by src/app/v1/models/[model]/route.ts. Credentials and account affinity are runtime values; never commit them.",
+        "operationId": "get_v1_models_model",
+        "responses": {
+          "200": {
+            "description": "Successful response."
+          },
+          "400": {
+            "description": "Invalid request."
+          },
+          "401": {
+            "description": "Authentication or API key required."
+          },
+          "409": {
+            "description": "Conflict, active operation, or submission is unknown."
+          },
+          "429": {
+            "description": "Concurrency limit exceeded."
+          },
+          "503": {
+            "description": "Provider or local runtime unavailable."
+          }
+        }
+      }
+    },
+    "/v1/videos": {
+      "post": {
+        "summary": "Handle POST /v1/videos.",
+        "description": "Implemented by src/app/v1/videos/route.ts. Credentials and account affinity are runtime values; never commit them.",
+        "operationId": "post_v1_videos",
+        "responses": {
+          "400": {
+            "description": "Invalid request."
+          },
+          "401": {
+            "description": "Authentication or API key required."
+          },
+          "409": {
+            "description": "Conflict, active operation, or submission is unknown."
+          },
+          "429": {
+            "description": "Concurrency limit exceeded."
+          },
+          "501": {
+            "description": "Capability is not implemented."
+          },
+          "503": {
+            "description": "Provider or local runtime unavailable."
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "audio_info": {
+        "type": "object",
+        "required": [
+          "id",
+          "title",
+          "image_url",
+          "lyric",
+          "audio_url",
+          "video_url",
+          "created_at",
+          "model_name",
+          "status",
+          "gpt_description_prompt",
+          "prompt",
+          "type",
+          "tags"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "audio id"
+          },
+          "title": {
+            "type": "string",
+            "description": "music title"
+          },
+          "image_url": {
+            "type": "string",
+            "description": "music cover image"
+          },
+          "lyric": {
+            "type": "string",
+            "description": "music lyric"
+          },
+          "audio_url": {
+            "type": "string",
+            "description": "music download url"
+          },
+          "video_url": {
+            "type": "string",
+            "description": "Music video download link, can be used to share"
+          },
+          "created_at": {
+            "type": "string",
+            "description": "Create time"
+          },
+          "model_name": {
+            "type": "string",
+            "description": "Raw Suno provider model identifier used by the generated audio, for example chirp-fenix."
+          },
+          "status": {
+            "type": "string",
+            "description": "The generated states include submitted, queue, streaming, complete."
+          },
+          "gpt_description_prompt": {
+            "type": "string",
+            "description": "Simple mode on user input prompt, Suno will generate formal prompts, lyrics, etc."
+          },
+          "prompt": {
+            "type": "string",
+            "description": "The final prompt for executing the generation task, customized by the user in custom mode, automatically generated by Suno in simple mode."
+          },
+          "type": {
+            "type": "string",
+            "description": "Type"
+          },
+          "tags": {
+            "type": "string",
+            "description": "Music genre. User-provided in custom mode, automatically generated by Suno in simple mode."
+          }
+        },
+        "title": "audio_info",
+        "description": "Audio Info"
+      },
+      "billing_settings": {
+        "type": "object",
+        "required": [
+          "purchaseCostCny",
+          "purchasedCredits",
+          "creditsPerGeneration",
+          "outputsPerGeneration",
+          "rateMultiplier",
+          "cnyPerUsd"
+        ],
+        "properties": {
+          "purchaseCostCny": {
+            "type": "number",
+            "example": 120,
+            "description": "Package purchase cost in CNY."
+          },
+          "purchasedCredits": {
+            "type": "number",
+            "example": 2500,
+            "description": "Upstream credits included in the package."
+          },
+          "creditsPerGeneration": {
+            "type": "number",
+            "example": 10,
+            "description": "Upstream credits consumed by one generation request."
+          },
+          "outputsPerGeneration": {
+            "type": "number",
+            "example": 2,
+            "description": "Songs returned by one generation request."
+          },
+          "rateMultiplier": {
+            "type": "number",
+            "example": 1,
+            "description": "Billing/group multiplier applied to credits and effective request value."
+          },
+          "cnyPerUsd": {
+            "type": "number",
+            "example": 1,
+            "description": "CNY represented by one downstream USD balance unit."
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "billing_settings_update": {
+        "type": "object",
+        "description": "Every supplied value must be a positive finite number. Omitted fields keep their current values.",
+        "properties": {
+          "purchaseCostCny": {
+            "type": "number",
+            "example": 120
+          },
+          "purchasedCredits": {
+            "type": "number",
+            "example": 2500
+          },
+          "creditsPerGeneration": {
+            "type": "number",
+            "example": 10
+          },
+          "outputsPerGeneration": {
+            "type": "number",
+            "example": 2
+          },
+          "rateMultiplier": {
+            "type": "number",
+            "example": 1
+          },
+          "cnyPerUsd": {
+            "type": "number",
+            "example": 1
+          }
+        }
+      },
+      "billing_summary": {
+        "type": "object",
+        "required": [
+          "costPerCreditCny",
+          "costPerGenerationCny",
+          "costPerOutputCny",
+          "billingPointsPerGeneration",
+          "totalBillablePoints",
+          "generationsPerPackage",
+          "outputsPerPackage",
+          "referencePackageValueCny",
+          "referenceGenerationValueCny",
+          "grossMarginPercent",
+          "sub2apiPerRequestPriceUsd",
+          "sub2apiEffectivePriceUsd"
+        ],
+        "properties": {
+          "costPerCreditCny": {
+            "type": "number",
+            "example": 0.048
+          },
+          "costPerGenerationCny": {
+            "type": "number",
+            "example": 0.48
+          },
+          "costPerOutputCny": {
+            "type": "number",
+            "example": 0.24
+          },
+          "billingPointsPerGeneration": {
+            "type": "number",
+            "example": 10
+          },
+          "totalBillablePoints": {
+            "type": "number",
+            "example": 2500
+          },
+          "generationsPerPackage": {
+            "type": "number",
+            "example": 250
+          },
+          "outputsPerPackage": {
+            "type": "number",
+            "example": 500
+          },
+          "referencePackageValueCny": {
+            "type": "number",
+            "example": 120
+          },
+          "referenceGenerationValueCny": {
+            "type": "number",
+            "example": 0.48
+          },
+          "grossMarginPercent": {
+            "type": "number",
+            "example": 0
+          },
+          "sub2apiPerRequestPriceUsd": {
+            "type": "number",
+            "example": 0.48,
+            "description": "Recommended Sub2API per_request_price before the group multiplier."
+          },
+          "sub2apiEffectivePriceUsd": {
+            "type": "number",
+            "example": 0.48,
+            "description": "Effective downstream request value after rateMultiplier."
+          }
+        }
+      },
+      "billing_snapshot": {
+        "type": "object",
+        "required": [
+          "settings",
+          "summary"
+        ],
+        "properties": {
+          "settings": {
+            "$ref": "#/components/schemas/billing_settings"
+          },
+          "summary": {
+            "$ref": "#/components/schemas/billing_summary"
+          }
+        }
+      },
+      "billing_public_response": {
+        "type": "object",
+        "required": [
+          "object",
+          "settings",
+          "summary"
+        ],
+        "properties": {
+          "object": {
+            "type": "string",
+            "enum": [
+              "billing_settings"
+            ]
+          },
+          "settings": {
+            "$ref": "#/components/schemas/billing_settings"
+          },
+          "summary": {
+            "$ref": "#/components/schemas/billing_summary"
+          }
+        }
+      },
+      "sub2api_key_billing": {
+        "type": "object",
+        "required": [
+          "object",
+          "schema_version",
+          "billing_scope",
+          "group_rate_multiplier",
+          "resolved_rate_multiplier",
+          "peak_rate_enabled",
+          "effective_rate_multiplier",
+          "observed_at"
+        ],
+        "properties": {
+          "object": {
+            "type": "string",
+            "enum": [
+              "sub2api.key_billing"
+            ]
+          },
+          "schema_version": {
+            "type": "integer",
+            "enum": [
+              1
+            ]
+          },
+          "billing_scope": {
+            "type": "string",
+            "enum": [
+              "token"
+            ],
+            "description": "Compatibility value required by the Sub2API probe."
+          },
+          "group_rate_multiplier": {
+            "type": "number",
+            "example": 1
+          },
+          "resolved_rate_multiplier": {
+            "type": "number",
+            "example": 1
+          },
+          "peak_rate_enabled": {
+            "type": "boolean",
+            "example": false
+          },
+          "effective_rate_multiplier": {
+            "type": "number",
+            "example": 1
+          },
+          "observed_at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "billing_admin_save_response": {
+        "type": "object",
+        "required": [
+          "ok",
+          "message",
+          "settings",
+          "summary"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean",
+            "example": true
+          },
+          "message": {
+            "type": "string"
+          },
+          "settings": {
+            "$ref": "#/components/schemas/billing_settings"
+          },
+          "summary": {
+            "$ref": "#/components/schemas/billing_summary"
+          }
+        }
+      },
+      "concurrency_settings": {
+        "type": "object",
+        "required": [
+          "maxConcurrentRequests"
+        ],
+        "properties": {
+          "maxConcurrentRequests": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 100,
+            "default": 4,
+            "example": 4
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "concurrency_settings_update": {
+        "type": "object",
+        "required": [
+          "maxConcurrentRequests"
+        ],
+        "properties": {
+          "maxConcurrentRequests": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 100,
+            "default": 4,
+            "example": 4
+          }
+        }
+      },
+      "concurrency_snapshot": {
+        "type": "object",
+        "required": [
+          "settings",
+          "activeRequests",
+          "availableSlots"
+        ],
+        "properties": {
+          "settings": {
+            "$ref": "#/components/schemas/concurrency_settings"
+          },
+          "activeRequests": {
+            "type": "integer",
+            "minimum": 0,
+            "example": 2
+          },
+          "availableSlots": {
+            "type": "integer",
+            "minimum": 0,
+            "example": 2
+          }
+        }
+      },
+      "concurrency_save_response": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/concurrency_snapshot"
+          },
+          {
+            "type": "object",
+            "required": [
+              "message"
+            ],
+            "properties": {
+              "message": {
+                "type": "string",
+                "example": "并发限制已保存并立即生效。"
+              }
+            }
+          }
+        ]
+      },
+      "concurrency_limit_error": {
+        "type": "object",
+        "required": [
+          "error"
+        ],
+        "properties": {
+          "error": {
+            "type": "object",
+            "required": [
+              "message",
+              "type",
+              "code",
+              "limit",
+              "active_requests",
+              "retry_after",
+              "submission_state"
+            ],
+            "properties": {
+              "message": {
+                "type": "string",
+                "example": "Global generation concurrency limit exceeded."
+              },
+              "type": {
+                "type": "string",
+                "enum": [
+                  "rate_limit_error"
+                ]
+              },
+              "code": {
+                "type": "string",
+                "enum": [
+                  "concurrency_limit_exceeded"
+                ]
+              },
+              "limit": {
+                "type": "integer",
+                "example": 4
+              },
+              "active_requests": {
+                "type": "integer",
+                "example": 4
+              },
+              "retry_after": {
+                "type": "integer",
+                "example": 5
+              },
+              "submission_state": {
+                "type": "string",
+                "enum": [
+                  "not_submitted"
+                ]
+              }
+            }
+          }
+        }
+      },
+      "model_list": {
+        "type": "object",
+        "required": [
+          "object",
+          "data"
+        ],
+        "properties": {
+          "object": {
+            "type": "string",
+            "enum": [
+              "list"
+            ]
+          },
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/suno_model"
+            }
+          }
+        }
+      },
+      "suno_model": {
+        "type": "object",
+        "required": [
+          "id",
+          "object",
+          "created",
+          "owned_by"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "enum": [
+              "suno-music",
+              "suno-v5.5",
+              "suno-v5",
+              "suno-v4.5+",
+              "suno-v4.5",
+              "suno-v4",
+              "suno-v3.5",
+              "suno-v3"
+            ]
+          },
+          "object": {
+            "type": "string",
+            "enum": [
+              "model"
+            ]
+          },
+          "created": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Unix timestamp generated by the catalog endpoint."
+          },
+          "owned_by": {
+            "type": "string",
+            "example": "suno-api"
+          },
+          "capabilities": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "example": [
+              "music"
+            ]
+          },
+          "metadata": {
+            "type": "object",
+            "description": "Suno API extensions describing the provider model, label, status, recommendation, and optional alias target.",
+            "required": [
+              "provider",
+              "provider_model",
+              "label",
+              "description",
+              "status",
+              "recommended"
+            ],
+            "properties": {
+              "provider": {
+                "type": "string",
+                "example": "suno"
+              },
+              "provider_model": {
+                "type": "string",
+                "example": "chirp-fenix"
+              },
+              "label": {
+                "type": "string",
+                "example": "Suno Music (Latest)"
+              },
+              "description": {
+                "type": "string"
+              },
+              "status": {
+                "type": "string",
+                "enum": [
+                  "current",
+                  "stable",
+                  "legacy"
+                ]
+              },
+              "recommended": {
+                "type": "boolean"
+              },
+              "alias_of": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
+    },
+    "responses": {
+      "ConcurrencyLimitExceeded": {
+        "description": "The global generation concurrency limit is full. Retry after a slot is released.",
+        "headers": {
+          "Retry-After": {
+            "description": "Suggested retry delay in seconds.",
+            "schema": {
+              "type": "integer",
+              "example": 5
+            }
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/concurrency_limit_error"
+            }
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "BearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "API key"
+      },
+      "ApiKeyAuth": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "x-api-key"
+      },
+      "AdminSession": {
+        "type": "apiKey",
+        "in": "cookie",
+        "name": "suno_admin_session"
+      }
+    }
+  },
+  "externalDocs": {
+    "description": "Project documentation",
+    "url": "https://github.com/dreamcolor123/suno-api-plus-next"
+  }
+}

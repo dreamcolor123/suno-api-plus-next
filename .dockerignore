@@ -1,0 +1,61 @@
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
+# dependencies
+/node_modules
+**/node_modules
+/.git
+/.artifacts
+/.pnp
+.pnp.js
+.yarn/install-state.gz
+
+# testing
+/coverage
+
+# next.js
+/.next/
+/out/
+
+# production
+/build
+/data
+**/data
+
+# misc
+.DS_Store
+*.pem
+*.log
+*.pid
+*.status
+
+# debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# local env files
+.env
+.env.*
+!.env.example
+
+# vercel
+.vercel
+
+# typescript
+*.tsbuildinfo
+next-env.d.ts
+
+.idea
+
+# Never send local credentials, browser state, generated media or build output
+# to Docker, even when the source checkout contains them.
+**/browser-profile
+**/*token*.json
+**/*cookie*.json
+**/current_browser_token.json
+**/.next
+**/.next/**
+**/out
+**/coverage
+**/*.tsbuildinfo
+README_RU.md

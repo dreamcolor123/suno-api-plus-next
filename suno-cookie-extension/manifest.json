@@ -1,0 +1,35 @@
+﻿{
+  "manifest_version": 3,
+  "name": "Suno Cookie Extractor",
+  "version": "1.0.0",
+  "description": "一键提取 Suno 登录 Cookie（含 __client），用于 suno-api 管理后台添加账号。",
+  "permissions": ["cookies", "storage", "tabs", "clipboardWrite"],
+  "host_permissions": [
+    "https://suno.com/*",
+    "https://*.suno.com/*",
+    "https://clerk.suno.com/*",
+    "https://*.clerk.suno.com/*",
+    "http://*/*",
+    "https://*/*"
+  ],
+  "action": {
+    "default_title": "提取 Suno Cookie",
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "32": "icons/icon32.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
+  },
+  "background": {
+    "service_worker": "background.js",
+    "type": "module"
+  },
+  "icons": {
+    "16": "icons/icon16.png",
+    "32": "icons/icon32.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  }
+}

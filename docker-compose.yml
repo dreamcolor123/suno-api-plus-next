@@ -1,0 +1,15 @@
+services:
+  suno-api-plus:
+    build:
+      context: .
+    ports:
+      - "127.0.0.1:3000:3000"
+    env_file:
+      - path: .env
+        required: false
+    environment:
+      NODE_ENV: production
+      ACCOUNT_DATA_PATH: /app/data/accounts.json
+    volumes:
+      - ./data:/app/data
+    restart: unless-stopped

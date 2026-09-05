@@ -1,0 +1,4 @@
+services:
+  suno-api-plus:
+    ports:
+      - "3000:3000"

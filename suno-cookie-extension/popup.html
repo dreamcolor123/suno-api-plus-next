@@ -1,0 +1,66 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Suno Cookie Extractor</title>
+  <link rel="stylesheet" href="popup.css" />
+</head>
+<body>
+  <div class="app">
+    <header class="header">
+      <div class="brand">
+        <div class="logo">S</div>
+        <div>
+          <div class="title">Suno Cookie Extractor</div>
+          <div class="subtitle">自动提取登录 Cookie</div>
+        </div>
+      </div>
+      <div id="statusPill" class="pill pill-muted">检测中</div>
+    </header>
+
+    <section class="card">
+      <div class="row">
+        <span class="label">登录状态</span>
+        <strong id="loginState">—</strong>
+      </div>
+      <div class="row">
+        <span class="label">__client</span>
+        <strong id="clientState">—</strong>
+      </div>
+      <div class="row">
+        <span class="label">Cookie 数量</span>
+        <strong id="cookieCount">0</strong>
+      </div>
+    </section>
+
+    <section class="actions">
+      <button id="extractBtn" class="btn btn-primary" type="button">一键提取 Cookie</button>
+      <button id="openSunoBtn" class="btn" type="button">打开 Suno 登录页</button>
+    </section>
+
+    <section class="card">
+      <div class="field-head">
+        <span class="label">提取结果</span>
+        <button id="copyBtn" class="link-btn" type="button" disabled>复制</button>
+      </div>
+      <textarea id="cookieOutput" class="output" readonly placeholder="点击上方按钮提取。需先在 suno.com 登录。"></textarea>
+      <div id="message" class="message"></div>
+    </section>
+
+    <section class="card">
+      <div class="field-head">
+        <span class="label">发送到管理后台（可选）</span>
+      </div>
+      <input id="adminUrl" class="input" type="url" placeholder="例如 http://38.47.121.78:3000" />
+      <div class="hint">填写你的 suno-api 地址后，可复制 Cookie 并一键打开 /admin 账号池。</div>
+      <button id="openAdminBtn" class="btn btn-soft" type="button">打开管理后台</button>
+    </section>
+
+    <footer class="footer">
+      安装后请先登录 suno.com，再点「一键提取」。Cookie 仅在本地处理。
+    </footer>
+  </div>
+  <script src="popup.js" type="module"></script>
+</body>
+</html>

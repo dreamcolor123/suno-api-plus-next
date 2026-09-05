@@ -1,0 +1,15 @@
+﻿{
+  "name": "suno-cookie-extractor",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Playwright helper that captures Clerk auth cookies from suno.com for SUNO_COOKIE.",
+  "type": "module",
+  "scripts": {
+    "get-cookie": "node get-cookie.mjs",
+    "verify-cookie": "node verify-cookie.mjs",
+    "postinstall": "npx playwright install chromium"
+  },
+  "dependencies": {
+    "playwright": "^1.49.1"
+  }
+}
